@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>828</width>
+    <height>666</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>PhyAE</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QSplitter" name="splitter_2">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QSplitter" name="splitter">
+       <property name="lineWidth">
+        <number>12</number>
+       </property>
+       <property name="midLineWidth">
+        <number>10</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="handleWidth">
+        <number>12</number>
+       </property>
+       <widget class="QWidget" name="widget" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QGLViewerExt" name="left_view" native="true"/>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>828</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionLoadInitFile"/>
+    <addaction name="actionLoadObj"/>
+    <addaction name="actionLoadVol"/>
+    <addaction name="actionPrintSelected"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionVolMesh"/>
+    <addaction name="actionObjMesh"/>
+    <addaction name="actionConNodes"/>
+   </widget>
+   <widget class="QMenu" name="menuSimulation">
+    <property name="title">
+     <string>Simulation</string>
+    </property>
+    <addaction name="actionPrepareSimulation"/>
+    <addaction name="actionPauseSimulation"/>
+    <addaction name="actionReset"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menuView"/>
+   <addaction name="menuSimulation"/>
+  </widget>
+  <action name="actionLoadInitFile">
+   <property name="text">
+    <string>LoadInitFile</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Q</string>
+   </property>
+  </action>
+  <action name="actionSimulate">
+   <property name="text">
+    <string>Simulate</string>
+   </property>
+  </action>
+  <action name="actionLoadObj">
+   <property name="text">
+    <string>LoadObj</string>
+   </property>
+  </action>
+  <action name="actionLoadVol">
+   <property name="text">
+    <string>LoadVol</string>
+   </property>
+  </action>
+  <action name="actionSaveConNodes">
+   <property name="text">
+    <string>SaveConNodes</string>
+   </property>
+  </action>
+  <action name="actionLoadConNodes">
+   <property name="text">
+    <string>LoadConNodes</string>
+   </property>
+  </action>
+  <action name="actionSelectNodes">
+   <property name="text">
+    <string>SelectNodes</string>
+   </property>
+  </action>
+  <action name="actionSelectTets">
+   <property name="text">
+    <string>SelectTets</string>
+   </property>
+  </action>
+  <action name="actionVolMesh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>VolMesh</string>
+   </property>
+   <property name="shortcut">
+    <string>V</string>
+   </property>
+  </action>
+  <action name="actionObjMesh">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>ObjMesh</string>
+   </property>
+   <property name="shortcut">
+    <string>W</string>
+   </property>
+  </action>
+  <action name="actionTetGroups">
+   <property name="text">
+    <string>TetGroups</string>
+   </property>
+   <property name="shortcut">
+    <string>T</string>
+   </property>
+  </action>
+  <action name="actionConNodes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>ConNodes</string>
+   </property>
+  </action>
+  <action name="actionMaterialGroups">
+   <property name="text">
+    <string>MaterialGroups</string>
+   </property>
+  </action>
+  <action name="actionPrepareSimulation">
+   <property name="text">
+    <string>PrepareSimulation</string>
+   </property>
+   <property name="shortcut">
+    <string>E</string>
+   </property>
+  </action>
+  <action name="actionPauseSimulation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>PauseSimulation</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionStopSimulation">
+   <property name="text">
+    <string>StopSimulation</string>
+   </property>
+  </action>
+  <action name="actionReset">
+   <property name="text">
+    <string>Reset</string>
+   </property>
+   <property name="shortcut">
+    <string>R</string>
+   </property>
+  </action>
+  <action name="actionFixSelectedTets">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>FixSelectedTets</string>
+   </property>
+  </action>
+  <action name="actionSaveMaterial">
+   <property name="text">
+    <string>SaveMaterial</string>
+   </property>
+  </action>
+  <action name="actionPrintSelected">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>PrintSelected</string>
+   </property>
+  </action>
+  <action name="actionLoadMaterial">
+   <property name="text">
+    <string>LoadMaterial</string>
+   </property>
+  </action>
+  <action name="actionRecord">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Record</string>
+   </property>
+   <property name="shortcut">
+    <string>C</string>
+   </property>
+  </action>
+  <action name="actionSaveRecordZ">
+   <property name="text">
+    <string>SaveRecordZ</string>
+   </property>
+  </action>
+  <action name="actionSaveEigenValues">
+   <property name="text">
+    <string>SaveEigenValues</string>
+   </property>
+  </action>
+  <action name="actionSaveEigenVectors">
+   <property name="text">
+    <string>SaveEigenVectors</string>
+   </property>
+  </action>
+  <action name="actionClearRecordedZ">
+   <property name="text">
+    <string>ClearRecordedZ</string>
+   </property>
+  </action>
+  <action name="actionSaveMaterialAsHinp">
+   <property name="text">
+    <string>SaveMaterialAsHinp</string>
+   </property>
+  </action>
+  <action name="actionInterpolateMaterials">
+   <property name="text">
+    <string>InterpolateMaterials</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QGLViewerExt</class>
+   <extends>QWidget</extends>
+   <header>QGLViewerExt.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>413</x>
+     <y>332</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

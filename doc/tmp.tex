@@ -1,0 +1,144 @@
+\documentclass[a4paper,9pt,twocolumn]{extarticle}
+
+\usepackage[hmargin=0.75in,vmargin=0.75in]{geometry}
+\setlength{\parskip}{1ex plus 0.5ex minus 0.5ex}
+\usepackage{amsmath}
+\usepackage{relsize}
+\usepackage{exscale}
+\usepackage[english]{babel}
+\usepackage{algorithm} %format of the algorithm
+\usepackage{algorithmic} %format of the algorithm
+\usepackage{amsfonts}
+
+\newcommand{\Diff}{\mathcal{D}}
+
+\title{Wrinkle Simulation Based on Elastic Solid with Embedded Thin Shell}
+\author{Jiong Chen}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+\section{Related Work}
+
+\section{Method Overview}
+Fine features such as wrinkles on the embedded surface can be observed when the elements of underlying lattice are sufficiently fine, requiring expensive models with hundreds of thousands if not millions, which will directly and steeply increases the time cost. Things would go worse and even unacceptable when we try to pursue real-time simulation in such situation. Therefore, our project builds upon the embedded mesh approach whose central inspiration is separating the function of determining model shape and displaying surface details by embedding a dense surface into a coarse volume. There are alternatives to unite both systems with position constraint and we simply use the barycentric interpolation.
+
+For elastic model simulation, $\cdots$
+$\\\cdots$
+
+We solve the shell deformation, modeled as an unconstraint optimization problem, by using sequential quadratic programming. $\cdots$
+$\\\cdots$
+
+\begin{algorithm}[h]
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand\algorithmicensure {\textbf{Output:}}
+\caption{Framework of Wrinkle Simulation}
+\begin{algorithmic}[1]
+\REQUIRE ~~\\
+coarse tetrahedral mesh $\textbf{Q}=(\textbf{v}_q,\textbf{f}_q)$ represents inner elastic model;
+\STATE Extract the surface of \textbf{Q} and then subdivide it to get a dense shell $\textbf{T}=(\textbf{v}_t,\textbf{f}_t)$ as undeformed configuration
+\STATE Build the interpolation matrix $\mathcal{B}$ via barycentric interpolation s.t. $\textbf{v}_t=\mathcal{B}\textbf{v}_q$;
+\STATE Init a elastic model simulator with mesh \textbf{Q}
+\STATE Init a shell deformer with mesh \textbf{T}
+\FOR{each time step}
+\STATE Simulate the elastic model updating mesh \textbf{Q}
+\STATE Calculate current embedded mesh distribution by $\mathcal{B}\textbf{v}_q$
+\STATE Deform the thin shell \textbf{T} under shape reference of $\mathcal{B}\textbf{v}_q$
+\STATE Render the shell
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{Basic Energy Operator}
+\subsection{Elastic}
+\textbf{(NULL)}
+\subsection{Shell}
+We follow the seminal work [Grinspun et al. 2003] to model the thin shell. In this way, the shell is governed by nonlinear \textit{membrane} and \textit{flexural} energies. These energies all measure differences between the undeformed configuration $\bar\Omega$ and deformed configuration $\Omega$. According to the author, the measurements defined on the model remain invariant under rigid body transformations of the undeformed configuration and/or deformed configuration, which ensures that internal forces conserve linear and angular momentum.
+
+Let $\varphi:\bar\Omega\rightarrow\Omega$ be piecewise-affine deformation map from the undeformed to the deformed surface, mapping every geometry element of the undeformed mesh to the corresponding element of the deformed mesh. We formulate the shell energy by the sum of membrane and flexural energies,
+\begin{equation}
+  W=W_M+k_BW_B
+\end{equation}
+In this formula, $W_M$ is the membrane energy while $W_B$ represents the flexural energy, where $k_B$ is the bending stiffness. In our implementation, we just omit the measurement of local change in area and simply put $W_M=k_LW_L$, where $W_L=\sum_\textit{e}(1-\frac{\|\textit{e}\|}{\|\textit{$\bar e$}\|})^2\|\textit{$\bar e$}\|$, a summation over (length of) edges measuring local change in length. As for bending energy $W_B$, it is an extrinsic measure of the difference between the shape operator evaluated on the deformed and undeformed surfaces. We express this difference as the \textit{squared difference of mean curvature:}
+\begin{equation}
+  [\mathrm{Tr}(\varphi^*\mathrm{S})-\mathrm{Tr}(\mathrm{\bar S})]^2=4(H\circ\varphi-\bar H)^2,
+\end{equation}
+where $\bar{\mathrm{S}}$ and S are the shape operators evaluated over the undeformed and deformed configurations respectively; like-wise $\bar H$ and $H$ are the mean curvatures; $\varphi^*S$ is the pull-back of S onto $\bar\Omega$, and we use $\mathrm{Tr}(\varphi^*S)=\varphi^*\mathrm{Tr}(S)=\mathrm{Tr}(S)\circ\varphi=H\circ\varphi$ for a diffeopmprphism $\varphi$. Integrating (2) over the reference domain we find the continuous flexural energy :
+\begin{equation}
+  \int_{\bar\Omega} {4(H\circ\varphi-\bar H)}d\bar A
+\end{equation}
+Discretizing the integral over the \textit{piecewise linear mesh} that represents the shell, we express our \textit{discrete flexural energy} as a summation over mesh edges,
+\begin{equation}
+  W_B(\textbf{x})=\sum_{\textit{e}}(\theta_e - \bar{\theta}_e)^2\|\bar{e}\|/\bar{h}_e,
+\end{equation}
+where $\theta_e$ and $\bar\theta_e$ are corresponding complements of the dihedral angel of \textit{e} measured in the deformed and undeformed configuration respectively, and $\bar{h}_e$ is a third of the weighted average of heights of the two triangles incident to the edge \textit{e}.
+
+There are several alternatives to approximate the matrixs B in our SQP method. Hessian matrix $\nabla^2 f$ and Guass-Newton matrix could be used, or a mixed scheme of both.
+\subsection{Constraint with Local Support}
+During each frame, we expect that the surface shell could follow the shape of current embedded mesh i.e. $\mathcal{B}\textbf{v}_q$ synchronously and meanwhile fine features like visible wrinkles could appear locally on the surface. In order to obtain such effect, we adopt the constraint proposed by [R$\acute{e}$millard et al. 2013] and simply convert the linear equality constraint to a quadratic penalty energy. Then we could formulate our deformation as simply solving such an unconstrained optimization problem.
+
+Position constraint is a indispensable bridge coupling surface and interior, thus I feel like to giving a specific statement of constructing the position constraint. The simplest scheme striking us at once is to set some fixed points, i.e. let $x_i=v_i$, for some $i$, just like we are holding on some points on the mesh. If we could generalize the concept of \textit{single point} and regard so-called \textit{single point} as an average of a cluster of points, then for a given cluster of vertices $C$, we will get position constraint in context with form
+\begin{equation}
+  \sum_{i\in C}\alpha_i \textbf{x}_i = \sum_{i\in C}\alpha_i [\mathcal{B}\textbf{v}_q]_i
+\end{equation}
+where the weights $\alpha_i$ provide an affine combination of the shell vertex positions $\textbf{x}_i$ and the embedded mesh vertex positions $[\mathcal{B}\textbf{v}_q]_i$. The weight is calculated as follow,
+\begin{equation}
+  \alpha_i = \omega_C e^{-\frac{d_i^2}{2\sigma^2}}, \ if \ d_i < 2\sigma, \ 0\ otherwise,
+\end{equation}
+where $\omega_C$ normalizes the sum of weights to one, and $d_i$ is the distance from vertex $i$ to the cluster's center, which we approximate by the shortest path following mesh edges. [R$\acute{e}$millard et al. 2013] gives a clear algorithm description on how to generate a certain number of overlapping clusters centered at locations distributed evenly across the surface, which using breadth first search technique based on greedy expansion. Related implementation details are just omitted here.
+
+Suppose we have got $c$ clusters after above partition, we are able to define a constraint on each cluster, and together they form the rows of a spare constraint matrix $H$ providing a linear transformation $H:\mathbb{R}^n\rightarrow \mathbb{R}^c$, with $c\ll n$. Now we could write our constraint as
+\begin{equation}
+  H(\textbf{x}-\mathcal{B}\textbf{v}_q)=\textbf{0}.
+\end{equation}
+The constraint forces shell $\textbf{x}$ to match the embedded shape $\mathcal{B}\textbf{v}_q$, with the null space of $H$ containing necessary deformations to produce wrinkles. We treat the shell deformation as isometric transformation thus $H$ is a constant to time variation, so we needn't to update $H$ within each time step. Considering the tradeoff between computing cost and visual effect, we select to convert (7) to a quadratic energy function, namely
+\begin{equation}
+  W_P(\textbf{x})=k_P\|H(\textbf{x}-\textbf{$\mathcal{B}$}\textbf{v}_q)\|^2
+\end{equation}
+where $k_P$ is weight need setting relatively large compared with $k_B$ and $k_L$. Up till now, a well implemented unconstrained optimizer can be applied.
+
+
+\section{Acceleration via Cluster}
+Abundance of visual effect always stands on the opposite to the quality of interaction. With fast increasing number of freedom aiming to display more details, speed gradually becomes unacceptable for approaching real-time performance. Naturally, we choose to deploy our project on clusters to run it in a concurrent environment for acceleration.
+
+It is obvious that we have to separate our model into several parts and send each of them to a corresponding node. We surprisingly find that such partition had been done exactly after we did a pre-processing on surface shell, using the greedy algorithm mentioned in section 4.3, to add position constraints. However, the generated regions are just sets of points and the shell energy functions to be optimized are all defined on triangle mesh though. To state conveniently, we treat the surface as a connected graph $G=(V,E)$ embedded in 3D space, where $V$ is the set of vertices and $E$ is the set of edges. Then what we have to do is to construct a sequence of subgraph $G_i=(V_i,E_i), ~for~i=1,2,\cdots,n$ that $V_i\subseteq V, E_i\subseteq E$. In each subgraph, we call a point an \textit{boundary vertex} if it lies on the convex hull when embedding such a patch onto a plane. And those other than boundary vertices are \textit{inner vertex}. We use $V_i^*$ do denote the inner vertex set of $G_i$, and $\partial{V}_i$ for boundary vertex set. Here we have some properties should be satisfied among those subgraphs respect to our separation strategy:
+\begin{enumerate}
+  \item $\displaystyle{\bigcup_{i=1}^n}G_i = G$.
+  \item $\forall G_i \subset G, ~E_i=\{ (u,v)|u\in V_i\land v\in V_i \land (u,v)\in E\}$.
+  \item $\forall G_i, G_j \subset G, ~ i \neq j \Rightarrow V_i^* \cap V_j^* = \emptyset$.
+  \item $\forall v \in \partial{V}_i \subseteq V_i, ~ \displaystyle{\bigvee_{j=1}^n} v \in V_j^* = true$.
+\end{enumerate}
+Condition 1 and 4 are sufficient to ensure that there is no omissive geometry elements that wouldn't be updated when delivering the optimization to several cluster's nodes, while condition 3 tries to minimize the cover of $G$ formed through the union of all subgraphs. And the condition 2 ensures that every patch is a complete triangle mesh since all patches are induced subgraphs of the origin.
+
+We use a simple approach to generate the separated triangle mesh satisfying the four properties above. Before that, it is necessary to record one-ring faces of every vertex in advance. Once the partition algorithm mentioned in section 4.3 being applied, we will get a number of disjoint point sets, based on which a patch could be constructed with ease just by collecting all vertices' one-ring faces within that cluster. Notice that some additional points will appear in a cluster after such procedure been carried out and it's not hard to find they share the name of boundary vertex. We likely have to merge some patches into a larger one according to the limited number of calculating nodes.
+
+All concurrent program need to consider the problem of the critical region carefully. Our project is not beyond exception either. From above statement, some additional vertices will be added to each region and apparently the new ones belong to another different region initially. The coordinates of such vertices will be calculated in two nodes respectively and the values are different in all probability. From the condition 3 and 4, we can conclude that such vertex must be inside one and only that one cluster, and also a boundary vertex of another. To make it as simple as possible, we avoid the conflicts by just reserving the value contributed by the vertex serving as an inner one. (briefly claim some reasons).
+
+We use the CS artitechure to build our parallel system.
+\section{Implementation Details}
+\subsection{Interpolation}
+
+\subsection{SQP}
+
+\subsection{Modulize}
+
+\section{Experiments}
+\textbf{Coupling rigid with elastic solid.} ~~~We use the \textit{Bullet} together with our elastic solid simulator to generate a scene containing a ball falling free onto a sofa.
+\section{Discussion and TODO}
+deploy the project on clusters to get real-time simulation.
+
+what is the essence of the difference between solving a problem by whole and seperating it into several parts.
+
+
+
+
+
+
+\section{Conclusion}
+
+\section{Reference}
+
+\end{document}
