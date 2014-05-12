@@ -34,3 +34,8 @@ tempt*
 .4
 *.spl
 *.vtk
+*.bak
+.git
+.gitignore
+LICENSE
+README.md
