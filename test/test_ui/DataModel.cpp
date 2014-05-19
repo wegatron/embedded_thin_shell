@@ -17,7 +17,7 @@ DataModel::DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
     _simulator = pSimulator(new FullStVKSimulator());
 }
 
-Vector3d maxCords(VVec3d& nodes)
+Vector3d maxCords(VVec3d nodes)
 {
   Vector3d rec = nodes[0];
   for(int i=1; i<nodes.size(); ++i)
@@ -29,10 +29,11 @@ Vector3d maxCords(VVec3d& nodes)
   return rec;
 }
 
-Vector3d maxCords(VVec3d& nodes)
+Vector3d meanCords(const VVec3d& nodes)
 {
-  Vector3d rec = nodes[0];
-  for(int i=1; i<nodes.size(); ++i)
+  Vector3d rec;// = nodes[0];
+  int i = 1;
+  for(; i<nodes.size(); ++i)
   {
     rec(0) += nodes[i](0);
     rec(1) += nodes[i](1);
@@ -66,38 +67,60 @@ pSimulator DataModel::createSimulator(const string filename)const{
 
 bool DataModel::loadSetting(const string filename){
 
-    JsonFilePaser jsonf;
-    if (!jsonf.open(filename)){
-        ERROR_LOG("failed to open: " << filename);
-        return false;
-    }
+  JsonFilePaser jsonf;
+  if (!jsonf.open(filename)){
+    ERROR_LOG("failed to open: " << filename);
+    return false;
+  }
 
-    _simulator = createSimulator(filename);
+  _simulator = createSimulator(filename);
 
-    bool succ = true;
-    string mtlfile;
-    if (jsonf.readFilePath("elastic_mtl",mtlfile)){
-        if (_volObj && _volObj->getTetMesh()){
-            succ = _volObj->getTetMesh()->loadElasticMtl(mtlfile);
-            Vector3f maxcords=maxCords(_volObj->getTetMesh()->nodes());
-            Vector3f meancords=meanCords(_volObj->getTetMesh()->nodes());
-            cout << "[INFO]" << __FILE__ << "," << __LINE__ << ": maxcords("
-                 << maxcords.transpose() << "), meancords(" << meancords.transpose()
-                 << ")" << endl;
-        }
+  bool succ = true;
+  string mtlfile;
+  if (jsonf.readFilePath("elastic_mtl",mtlfile)){
+    if (_volObj && _volObj->getTetMesh()){
+      succ = _volObj->getTetMesh()->loadElasticMtl(mtlfile);
+      const VVec3d& vol_nodes = _volObj->getTetMesh()->nodes();
+      // Vector3f meancords=meanCords(vol_nodes);
+      // Vector3f maxcords=maxCords(vol_nodes);
+
+
+      Vector3d maxcords = vol_nodes[0];
+      for(int i=1; i<vol_nodes.size(); ++i)
+      {
+        maxcords(0) = max(maxcords(0), vol_nodes[i](0));
+        maxcords(1) = max(maxcords(1), vol_nodes[i](1));
+        maxcords(2) = max(maxcords(2), vol_nodes[i](2));
+      }
+
+
+      Vector3d meancords = vol_nodes[0];
+      int i = 1;
+      for(; i<vol_nodes.size(); ++i)
+      {
+        meancords(0) += vol_nodes[i](0);
+        meancords(1) += vol_nodes[i](1);
+        meancords(2) += vol_nodes[i](2);
+      }
+      meancords = meancords/i;
+
+      cout << "[INFO]" << __FILE__ << "," << __LINE__ << ": maxcords("
+           << maxcords.transpose() << "), meancords(" << meancords.transpose()
+           << ")" << endl;
     }
+  }
     
-    // string fixed_node_file;
-    // if (jsonf.readFilePath("fixed_nodes", fixed_node_file)){
-    // 	succ &= loadFixedNodes(fixed_node_file);
-    // }
+  // string fixed_node_file;
+  // if (jsonf.readFilePath("fixed_nodes", fixed_node_file)){
+  // 	succ &= loadFixedNodes(fixed_node_file);
+  // }
 
-    if (_simulator){
-        succ &= _simulator->init(filename);
-    }
+  if (_simulator){
+    succ &= _simulator->init(filename);
+  }
 
-    print();
-    return succ;
+  print();
+  return succ;
 }
 
 void DataModel::prepareSimulation(){
