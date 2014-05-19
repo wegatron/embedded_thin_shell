@@ -77,7 +77,7 @@ void MainWindow::loadInitFile(const string filename){
 	bool succ = _volObjCtrl->initialize(filename);
 	succ &= _dataModel->loadSetting(filename);
 	_dataModel->prepareSimulation();
-
+        
 	JsonFilePaser jsonf;
 	jsonf.open(filename);
 	double con_penalty;
