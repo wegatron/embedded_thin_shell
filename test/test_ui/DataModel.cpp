@@ -1,4 +1,6 @@
 #include "DataModel.h"
+#include <hjlib/util/hrclock.h>
+
 #include <SubspaceSimulator.h>
 #include <FullStVKSimulator.h>
 #include <MatrixIO.h>
@@ -163,28 +165,43 @@ void DataModel::resetPartialCon(){
 
 bool DataModel::simulate(){
 
-    bool succ = false;
-    /**
-     * @brief elastic solid component
-     */
-    if(_simulator){
-        succ = _simulator->forward();
-        //	_volObj->interpolate(getU());
+  bool succ = false;
+  /**
+   * @brief elastic solid component
+   */
+  static hj::util::high_resolution_clock hrc_st;
+  static double time_leave = -1.0;
+  double time_start = hrc_st.ms();
+  if (time_leave > 0)
+  {
+    // cout << "out side time:" << time_start - time_leave << endl;
+  } else {
+    cout << "[zsw_info]" << __FILE__ << ":" << __LINE__ << ":"
+         << "shell nodes " <<  shell_nodes_.size(1) << "*" << shell_nodes_.size(2) << endl; 
 
-    }
-    /**
-     * @brief shell deformation component
-     */
-//    {
-//        VectorXd disp = getU();
-//        std::copy(disp.data(), disp.data() + disp.size(), dx_.begin());
-//        q_ = tet_nodes_ + dx_;
+  }
+  
+  if(_simulator){
+    hj::util::high_resolution_clock hrc;
+    double begin = hrc.ms();
 
-//        xq_ = q_ * B_;
-//        shell_deformer_->deform(shell_nodes_, xq_);
-//        jtf::mesh::cal_point_normal(shell_mesh_, shell_nodes_, shell_normal_);
+    succ = _simulator->forward();
+    //	_volObj->interpolate(getU());
+    // cout << "elastic deformation : " << hrc.ms() - begin << endl;
+  }
+  /**
+   * @brief shell deformation component
+   */
+  {
+    VectorXd disp = getU();
+    std::copy(disp.data(), disp.data() + disp.size(), dx_.begin());
+    q_ = tet_nodes_ + dx_;
 
-//    }
+    xq_ = q_ * B_;
+    shell_deformer_->deform(shell_nodes_, xq_);
+    jtf::mesh::cal_point_normal(shell_mesh_, shell_nodes_, shell_normal_);
 
-    return succ;
+  }
+  time_leave = hrc_st.ms();
+  return succ;
 }

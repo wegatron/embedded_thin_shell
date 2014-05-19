@@ -94,6 +94,7 @@ namespace LSW_BASE_UI{
 	  UTILITY::JsonFilePaser inf;
 	  bool succ = false;
 	  if ( inf.open(init_filename) ){
+            cout << "zsw info parase inf file" << __FILE__ << ":" << __LINE__ << ":" << endl;
 		string filename;
 		if ( inf.readFilePath("obj_mesh_file",filename,true)){
 		  succ = volobjmesh->loadObjMesh(filename);

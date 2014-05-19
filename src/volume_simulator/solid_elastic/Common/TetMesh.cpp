@@ -217,7 +217,7 @@ bool TetMesh::load(const std::string& filename){
 	is >> v[0] >> tc >> v[1]>> tc >> v[2];
 	nodes.push_back(v);
   }
-
+  cout << "[zsw_info] "<< nodes.size() << "nodes in vol mesh." << __FILE__ << ":" << __LINE__ << endl;
   // load tets
   Vector4i t;
   const Vector4i t1 = Vector4i::Ones(4);

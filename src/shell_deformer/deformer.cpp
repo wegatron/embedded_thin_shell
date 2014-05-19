@@ -7,7 +7,7 @@
 #include <hjlib/math_func/operation.h>
 #include <hjlib/util/hrclock.h>
 #include <jtflib/optimizer/optimizer.h>
-#include "../parallize/linear_solver.h"
+// #include "../parallize/linear_solver.h"
 #include "../parallize/SQP.h"
 #include "cluster.h"
 

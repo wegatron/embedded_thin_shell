@@ -4,7 +4,9 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <iostream>
 
+using namespace std;
 namespace QGLVEXT{
 
   /** 
@@ -31,6 +33,8 @@ namespace QGLVEXT{
 	}
 	void setPerturCompilance(double c){
 	  assert(c > 0.0f);
+          cout << "[zsw_info]"<< __FILE__ << ":" << __LINE__ << ": set perturb_compilance:"
+               << c << endl;
 	  perturb_compilance = c;
 	}
 	void setPerturbNodeId(int volmesh_node_id){
@@ -56,6 +60,8 @@ namespace QGLVEXT{
 	}
 	void getPerturbForce(double force[3])const{
 	  assert(isDrag());
+          cout << "[zsw_info]" << __FILE__ << ":" << __LINE__ << "perturb_compilance:"
+               << perturb_compilance << endl;
 	  force[0] = perturb_compilance*(perturb_to[0] - start_pos[0]);
 	  force[1] = perturb_compilance*(perturb_to[1] - start_pos[1]);
 	  force[2] = perturb_compilance*(perturb_to[2] - start_pos[2]);

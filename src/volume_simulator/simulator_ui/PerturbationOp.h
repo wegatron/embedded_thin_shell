@@ -22,7 +22,7 @@ namespace SIMULATOR{
 	
   public:
 	Perturbation(pQGLViewerExt viewer,pDataModel dm):_viewer(viewer),_dataModel(dm){
-	  _perturbator.setPerturCompilance(1.0f);
+      	  _perturbator.setPerturCompilance(1.0f);
 	}
 	void setPerturCompilance(const double p){
 	  assert_gt(p,0.0);

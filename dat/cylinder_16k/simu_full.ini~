@@ -1,0 +1,15 @@
+{
+
+"init_file_dir": "/home/chenjiong/usr/WorkSpace/embedded_shell/dat/new_cylinder/",
+"simulator"    : "full_stvk",
+
+"h"            : 0.005,
+"alpha_k"      : 0.0,
+"alpha_m"      : 0.0,
+"con_penalty"  : 100.0,
+
+"vol_file"       : "model/mesh.abq",
+"elastic_mtl"    : "model/mesh.elastic",
+"obj_file"       : "model/mesh.obj",
+"vol2obj_weights": "model/interp_weights.txt"
+}
