@@ -88,7 +88,7 @@ int main()
             matrix<double> emd_ref_nodes;
             emd_ref_nodes.resize(3, _model[i]->nodes.size(2));
             for (size_t j = 0; j < _model[i]->nodes.size(2); ++j) {
-                assert(_model[i]->s2g.find(j) != nullptr);
+                // assert(_model[i]->s2g.find(j) != nullptr);
                 emd_ref_nodes(colon(), j) = emd_nodes(colon(), _model[i]->s2g[j]);
             }
             _solver[i]->deform(_model[i]->nodes, emd_ref_nodes);

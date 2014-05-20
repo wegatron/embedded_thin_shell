@@ -11,7 +11,7 @@ DragCtrl::DragCtrl(pQGLViewerExt _viewer):viewer(_viewer){
   is_dragging = false;
   _selected = false;
   mouse_button = Qt::LeftButton;
-  modify_key = Qt::NoModifier;
+  modify_key = Qt::MetaModifier;
   z_deepth = 0.5f;
   createConnections();
 }
@@ -23,7 +23,7 @@ DragCtrl::DragCtrl(pQGLViewerExt _viewer, pSelectable selector):
   is_dragging = false;
   _selected = false;
   mouse_button = Qt::LeftButton;
-  modify_key = Qt::NoModifier;
+  modify_key = Qt::MetaModifier;
   z_deepth = 0.5f;
   createConnections();
 }

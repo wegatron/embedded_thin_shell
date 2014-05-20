@@ -38,6 +38,8 @@ namespace SIMULATOR{
 	pFileDialog _fileDialog;
 	pPerturbationCtrl _perturb;
 
+        pLocalframeManipulatoionCtrl manipulation_passive_obj;
+	pPassiveObject _passiveObject;
 	pDataModel _dataModel;
 	pVolObjCtrl _volObjCtrl;
 	pSimSelectionCtrl _selCtrl;

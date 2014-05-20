@@ -67,6 +67,13 @@ namespace SIMULATOR{
 	void togglePrintSelEle(){ 
 	  _selCtrl->togglePrintSelEle(); 
 	}
+        void setEnable(bool enable){
+          if (enable){
+            _selCtrl->enableSelOp();
+          }else{
+            _selCtrl->disableSelOp();
+          }
+        }
 
   private:
 	pSelectCtrl _selCtrl;

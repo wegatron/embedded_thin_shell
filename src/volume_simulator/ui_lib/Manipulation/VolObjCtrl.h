@@ -101,14 +101,14 @@ namespace UTILITY{
 		if ( inf.readFilePath("vol_file",filename,true) ){
 		  succ &= volobjmesh->loadTetMesh(filename);
 		}
-		if ( inf.readFilePath("vol2obj_weights",filename,true)){
-          if(!volobjmesh->loadWeights(filename)){
-             volobjmesh->buildInterpWeights();
-             volobjmesh->writeWeights(filename);
-          }
-        }else{
-           volobjmesh->buildInterpWeights();
-        }
+		if ( succ && inf.readFilePath("vol2obj_weights",filename,false)){
+                  if(!volobjmesh->loadWeights(filename)){
+                    volobjmesh->buildInterpWeights();
+                    volobjmesh->writeWeights(filename);
+                  }
+                }else if (succ){
+                  volobjmesh->buildInterpWeights();
+                }
 	  }
 	  return succ;
 	}

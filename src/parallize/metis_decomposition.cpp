@@ -120,7 +120,7 @@ int decomposition::genConstraint(vector<pPatch> &group)
 {
 #pragma omp parallel for
     for (size_t i = 0; i < group.size(); ++i) {
-        assert(group[i]->mesh.size() > 0 && group[i]->nodes.size() > 0);
+        assert(group[i]->mesh_.size() > 0 && group[i]->nodes_.size() > 0);
         shared_ptr<cluster_machine> pCM(new cluster_machine(group[i]->mesh_,
                                                             group[i]->nodes_,
                                                             __CLUSTER_RADIUS));

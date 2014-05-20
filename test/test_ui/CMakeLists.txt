@@ -22,6 +22,7 @@ include_directories(
 
 SET(NONE_QT_CPP
   main.cpp
+  PassiveObject.cpp
 )
 
 SET(UI_SOURCES
@@ -38,7 +39,6 @@ SET(UI_HEADERS
   SelectionOp.h
   DataModelRender.h
   DataModel.h
-
 )
 
 SET(UI_FORMS 

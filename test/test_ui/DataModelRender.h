@@ -66,7 +66,8 @@ namespace SIMULATOR{
       if (_renderType & SHELL) {
         drawShellMesh();
       }
-      drawBall();
+      if ( _dataModel->passObj_)
+        drawPassObj();
     }
     pTextForRender getTextForRender()const{
       return _text;
@@ -139,11 +140,11 @@ namespace SIMULATOR{
       glEnd();
       glDisable(GL_LIGHTING);
     }
-    void drawBall() const {
-      cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": draw Ball" << endl;
-      const matrix<size_t> faces = _dataModel->ball_mesh_;
-      const matrix<double> verts = _dataModel->ball_nodes_;
-      const matrix<double> norms = _dataModel->ball_normal_;
+    void drawPassObj() const {
+      /* cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": draw pass obj" << endl; */
+      const matrix<size_t> faces = _dataModel->passObj_->mesh_;
+      const matrix<double> verts = _dataModel->passObj_->nodes_;
+      const matrix<double> norms = _dataModel->passObj_->normal_;
 
       cout << faces.size() << ":" << verts.size() << ":" << norms.size() << endl;
       glEnable(GL_SMOOTH);

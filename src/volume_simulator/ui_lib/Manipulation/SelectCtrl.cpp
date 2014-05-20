@@ -16,8 +16,8 @@ SelectCtrl::SelectCtrl(pQGLViewerExt viewer,pSelectable selector,const int minSe
   select_rect->clean();
   viewer->addSelfRenderEle(select_rect);
 
-  add_mouse_button = Qt::RightButton;
-  add_modify_key = Qt::NoModifier;
+  add_mouse_button = Qt::LeftButton;
+  rm_modify_key = Qt::ShiftModifier;
 
   rm_mouse_button = Qt::RightButton;
   rm_modify_key = Qt::ShiftModifier;

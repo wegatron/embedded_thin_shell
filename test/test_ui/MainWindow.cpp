@@ -28,6 +28,15 @@ void MainWindow::createComponents(){
   _selCtrl = pSimSelectionCtrl(new SimSelectionCtrl(_viewer,_dataModel));
   _perturb = pPerturbationCtrl(new PerturbationCtrl(_viewer,_dataModel));
   _DragCtrl = pDragNodeCtrl(new DragNodeCtrl(_viewer, _dataModel));
+
+  // passive objects
+  _passiveObject = pPassiveObject(new PassiveBall(_viewer));
+  manipulation_passive_obj = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, _passiveObject));
+  manipulation_passive_obj->setEnable(true);
+  _viewer->addSelfRenderEle(_passiveObject);
+  _dataModel->setPassiveObject(_passiveObject);
+
+  _selCtrl->setEnable(false);
 }
 
 void MainWindow::createConnections(){
@@ -75,6 +84,7 @@ void MainWindow::loadInitFile(const string filename){
 
 	DEBUG_LOG("begin to load vol_obj");
 	bool succ = _volObjCtrl->initialize(filename);
+        DEBUG_LOG("begin to init _dataModel");
 	succ &= _dataModel->loadSetting(filename);
 	_dataModel->prepareSimulation();
         
@@ -86,6 +96,11 @@ void MainWindow::loadInitFile(const string filename){
 	INFO_LOG("con_penalty: "<<con_penalty );
 	_fileDialog->warning(succ);
 
+        string passive_obj_file;
+	if (_passiveObject&&jsonf.readFilePath("passive_object", passive_obj_file, true)){
+	  _passiveObject->load(passive_obj_file);
+	}
+        
   }else{
 
 	ERROR_LOG("file " << filename <<" is not exist!" );

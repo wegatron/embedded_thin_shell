@@ -225,8 +225,8 @@ void QGLViewerExt::resetSceneBoundBox(double x0,double y0,double z0,
 
 void QGLViewerExt::init(){
 
-  // set lighting
-  const double scalor = 0.8f;
+  // // set lighting
+  const double scalor = 0.5f;
   const GLfloat light_ambient[4]  = {0.8f*scalor, 0.8f*scalor, 0.8f*scalor, 1.0f*scalor};
   const GLfloat light_diffuse[4]  = {0.8f*scalor, 0.8f*scalor, 0.8f*scalor, 1.0f*scalor};
   const GLfloat light_specular[4] = {1.0f*scalor, 1.0f*scalor, 1.0f*scalor, 1.0f*scalor};
@@ -245,23 +245,30 @@ void QGLViewerExt::init(){
 
   // other
   restoreStateFromFile();
-  setBackgroundColor(QColor(255,255,255));
+  // setBackgroundColor(QColor(255,255,255));
   glBlendFunc(GL_ONE, GL_ONE);
 
   resetSceneBoundBox(-3,-3,-3,3,3,3);
 
-	
+  // Make camera the default manipulated frame.
+  setManipulatedFrame( camera()->frame() );
+
+  setHandlerKeyboardModifiers(QGLViewer::CAMERA, Qt::AltModifier);
+  setHandlerKeyboardModifiers(QGLViewer::FRAME, Qt::NoModifier);
+  // setHandlerKeyboardModifiers(QGLViewer::CAMERA, Qt::ControlModifier);
+
   setMouseTracking(true);
-  // set mouse binding
-  setMouseBinding(Qt::MiddleButton, CAMERA, NO_MOUSE_ACTION);
-  setMouseBinding(Qt::LeftButton, CAMERA, NO_MOUSE_ACTION);
-  setMouseBinding(Qt::RightButton, CAMERA, NO_MOUSE_ACTION);
-  setWheelBinding(Qt::NoModifier, CAMERA, NO_MOUSE_ACTION);
+
+  // // set mouse binding
+  // setMouseBinding(Qt::MiddleButton, CAMERA, NO_MOUSE_ACTION);
+  // setMouseBinding(Qt::LeftButton, CAMERA, NO_MOUSE_ACTION);
+  // setMouseBinding(Qt::RightButton, CAMERA, NO_MOUSE_ACTION);
+  // setWheelBinding(Qt::NoModifier, CAMERA, NO_MOUSE_ACTION);
    
-  setMouseBinding(Qt::MiddleButton+Qt::CTRL, CAMERA, ZOOM);
-  setMouseBinding(Qt::LeftButton+Qt::CTRL, CAMERA, ROTATE);
-  setMouseBinding(Qt::RightButton+Qt::CTRL, CAMERA, TRANSLATE);
-  setWheelBinding(Qt::ControlModifier, CAMERA, MOVE_FORWARD);
+  // setMouseBinding(Qt::MiddleButton+Qt::CTRL, CAMERA, ZOOM);
+  // setMouseBinding(Qt::LeftButton+Qt::CTRL, CAMERA, ROTATE);
+  // setMouseBinding(Qt::RightButton+Qt::CTRL, CAMERA, TRANSLATE);
+  // setWheelBinding(Qt::ControlModifier, CAMERA, MOVE_FORWARD);
 }
 
 void QGLViewerExt::select(const QMouseEvent *event){

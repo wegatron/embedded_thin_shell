@@ -12,36 +12,65 @@
 
 using namespace SIMULATOR;
 
+void Ball::calCollisionForce(const pTetMesh& tet_mesh, const VectorXd& U,
+                             VectorXd& force) const
+{
+  const VVec3d& tet_nodes = tet_mesh->nodes();
+  Vector3d center;
+  int i=0;
+  // cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": " << nodes_.size(2)
+  //      << "ball nodes_" << endl;
+  for(; i<nodes_.size(2); ++i)
+  {
+    center(0) += nodes_(0,i);
+    center(1) += nodes_(1,i);
+    center(2) += nodes_(2,i);
+  }
+  center = center/i;
+  const double radius = (center - Vector3d( nodes_(0,0), nodes_(1,0), nodes_(2,0) )).norm();
+  // cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": ball center(" << center.transpose()
+  //      << "), " << radius << endl;
+  force.resize(tet_nodes.size()*3);
+  force.setZero();
+  for(i=0; i<tet_nodes.size(); ++i)
+  {
+    // Vector3d diff= tet_nodes[i]-center+U.block(3*i,0,3,1);
+    // double diff_norm = diff.norm();
+    // double forcenorm = 1000.0/(radius-diff_norm);
+    // if(forcenorm < 0 )
+    // {
+    //   cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": force norm < 0!"
+    //        << endl;
+    //   exit(1);
+    // }
+    // force.block(i*3,0,3,1) = diff*forcenorm/diff_norm;
+
+    
+    // if (diff_norm < radius)
+    // {
+    //   // cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": node " << i << endl;
+    //   double forcenorm = 1000.0/(radius-diff_norm);
+    //   if(forcenorm < 0 )
+    //   {
+    //     cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": force norm < 0!"
+    //          << endl;
+    //     exit(1);
+    //   }
+    //   force.block(i*3,0,3,1) = diff*forcenorm/diff_norm;
+    // }
+  }
+}
+
+void Ball::move(const zjucad::matrix::matrix<double>& dis)
+{
+  assert(dis.size(1)==3 && dis.size(2)==1);
+  nodes_ += dis * zjucad::matrix::ones<double>(nodes_.size(2),1);
+}
+
 DataModel::DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
 
     assert(embeding);
     _simulator = pSimulator(new FullStVKSimulator());
-}
-
-Vector3d maxCords(VVec3d nodes)
-{
-  Vector3d rec = nodes[0];
-  for(int i=1; i<nodes.size(); ++i)
-  {
-    rec(0) = max(rec(0), nodes[i](0));
-    rec(1) = max(rec(1), nodes[i](1));
-    rec(2) = max(rec(2), nodes[i](2));
-  }
-  return rec;
-}
-
-Vector3d meanCords(const VVec3d& nodes)
-{
-  Vector3d rec;// = nodes[0];
-  int i = 1;
-  for(; i<nodes.size(); ++i)
-  {
-    rec(0) += nodes[i](0);
-    rec(1) += nodes[i](1);
-    rec(2) += nodes[i](2);
-  }
-  rec = rec/i;
-  return rec;
 }
 
 pSimulator DataModel::createSimulator(const string filename)const{
@@ -111,11 +140,11 @@ bool DataModel::loadSetting(const string filename){
 
     }
   }
-
+  passObj_ = pPassObj(new Ball());
   jtf::mesh::load_obj("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/sofa/model/ball.obj",
-                      ball_mesh_, ball_nodes_);
-  jtf::mesh::cal_point_normal(ball_mesh_, ball_nodes_, ball_normal_);
-
+                      passObj_->mesh_, passObj_->nodes_);
+  jtf::mesh::cal_point_normal(passObj_->mesh_, passObj_->nodes_, passObj_->normal_);
+  cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": load suc" << endl;
   // string fixed_node_file;
   // if (jsonf.readFilePath("fixed_nodes", fixed_node_file)){
   // 	succ &= loadFixedNodes(fixed_node_file);
@@ -243,7 +272,23 @@ bool DataModel::simulate(){
   if(_simulator){
     hj::util::high_resolution_clock hrc;
     double begin = hrc.ms();
-
+    VectorXd colForce;
+    passObj_->calCollisionForce(_volObj->getTetMesh(), getU(), colForce);
+    // static bool print_flag = true;
+    // if(print_flag)
+    // {
+    //   cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": col force"
+    //      << colForce.transpose() << endl;
+    //   print_flag = false;
+    // }
+    static int times = 0;
+    if(times >50)
+    {
+      _simulator->setExtForce(colForce);
+      // cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": force add!"
+      //      << endl;
+    }
+    else { ++times; }
     succ = _simulator->forward();
     //	_volObj->interpolate(getU());
     // cout << "elastic deformation : " << hrc.ms() - begin << endl;

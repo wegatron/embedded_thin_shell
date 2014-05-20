@@ -29,6 +29,7 @@ namespace QGLVEXT{
   };
 
   typedef boost::shared_ptr<Selectable > pSelectable; 
+  typedef boost::shared_ptr<const Selectable > pSelectable_const; 
   
 }//end of namespace
 
