@@ -62,9 +62,6 @@ namespace SIMULATOR{
 	const pTetMesh_const getVolMesh()const{
 	  return _volObj->getTetMesh();
 	}
-        const Vector4d& getBall() const{
-          return _ball;
-        }
 	const VectorXd &getU()const{
 	  assert(_simulator);
 	  return _simulator->getFullDisp();
@@ -98,13 +95,11 @@ namespace SIMULATOR{
 	pTetMeshEmbeding _volObj;
 
 //********MY MODIFY***************************************
-        Vector4d _ball; // x,y,z, r
-
 
 public :
-    matrix<size_t>         tet_mesh_, shell_mesh_;
-    matrix<double>         tet_nodes_, shell_nodes_;
-    matrix<double>         shell_normal_;
+    matrix<size_t>         tet_mesh_, shell_mesh_, ball_mesh_;
+    matrix<double>         tet_nodes_, shell_nodes_, ball_nodes_;
+    matrix<double>         shell_normal_, ball_normal_;
     shared_ptr<deformer>   shell_deformer_;
     matrix<double>         B_;
     map<size_t, vector<pair<size_t, string>>> regions_;

@@ -94,4 +94,5 @@ jtf-optimizer
 zjucad-optimizer
 zjucad-ptree
 shell
+glut
 )

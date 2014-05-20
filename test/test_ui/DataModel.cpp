@@ -5,6 +5,7 @@
 #include <FullStVKSimulator.h>
 #include <MatrixIO.h>
 #include <jtflib/mesh/util.h>
+#include <jtflib/mesh/io.h>
 #include "interpolator/interpolator.h"
 #include "shell_deformer/cluster.h"
 #include "conf_para.h"
@@ -107,9 +108,14 @@ bool DataModel::loadSetting(const string filename){
       cout << "[INFO]" << __FILE__ << "," << __LINE__ << ": maxcords("
            << maxcords.transpose() << "), meancords(" << meancords.transpose()
            << ")" << endl;
+
     }
   }
-    
+
+  jtf::mesh::load_obj("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/sofa/model/ball.obj",
+                      ball_mesh_, ball_nodes_);
+  jtf::mesh::cal_point_normal(ball_mesh_, ball_nodes_, ball_normal_);
+
   // string fixed_node_file;
   // if (jsonf.readFilePath("fixed_nodes", fixed_node_file)){
   // 	succ &= loadFixedNodes(fixed_node_file);
