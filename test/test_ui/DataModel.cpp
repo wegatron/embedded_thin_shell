@@ -36,20 +36,17 @@ void Ball::calCollisionForce(const pTetMesh& tet_mesh, const VectorXd& U,
   {
     // Vector3d diff= tet_nodes[i]-center+U.block(3*i,0,3,1);
     // double diff_norm = diff.norm();
-    // double forcenorm = 1000.0/(radius-diff_norm);
-    // if(forcenorm < 0 )
+    // if (diff_norm < radius)
     // {
-    //   cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": force norm < 0!"
-    //        << endl;
-    //   exit(1);
+    //   double forcenorm = 10000.0*(radius-diff_norm)/radius;
+    //   force.block(i*3,0,3,1) = (forcenorm/diff_norm)*diff;
+    //   // force.block(i*3,0,3,1) = Vector3d(1,1,1);
     // }
-    // force.block(i*3,0,3,1) = diff*forcenorm/diff_norm;
-
     
     // if (diff_norm < radius)
     // {
     //   // cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": node " << i << endl;
-    //   double forcenorm = 1000.0/(radius-diff_norm);
+    //   double forcenorm = 1000.0/(diff_norm-0.7*radius);
     //   if(forcenorm < 0 )
     //   {
     //     cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": force norm < 0!"
@@ -105,6 +102,11 @@ bool DataModel::loadSetting(const string filename){
 
   _simulator = createSimulator(filename);
 
+  if(!jsonf.read("num_step", steps)){
+    steps = 1;
+  }
+  assert_ge(steps,1);
+  
   bool succ = true;
   string mtlfile;
   if (jsonf.readFilePath("elastic_mtl",mtlfile)){
@@ -133,23 +135,19 @@ bool DataModel::loadSetting(const string filename){
         meancords(2) += vol_nodes[i](2);
       }
       meancords = meancords/i;
-
-      cout << "[INFO]" << __FILE__ << "," << __LINE__ << ": maxcords("
-           << maxcords.transpose() << "), meancords(" << meancords.transpose()
-           << ")" << endl;
-
     }
   }
   passObj_ = pPassObj(new Ball());
-  jtf::mesh::load_obj("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/sofa/model/ball.obj",
+  jtf::mesh::load_obj("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/sofa/model/ball_new.obj",
                       passObj_->mesh_, passObj_->nodes_);
   jtf::mesh::cal_point_normal(passObj_->mesh_, passObj_->nodes_, passObj_->normal_);
-  cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": load suc" << endl;
-  // string fixed_node_file;
-  // if (jsonf.readFilePath("fixed_nodes", fixed_node_file)){
-  // 	succ &= loadFixedNodes(fixed_node_file);
-  // }
 
+  vector<int> fixed_nodes;
+  if(jsonf.readVecFile("fixed_nodes",fixed_nodes,TEXT)){
+    prepareSimulation();
+    addConNodes(fixed_nodes);
+  }
+  
   if (_simulator){
     succ &= _simulator->init(filename);
   }
@@ -257,41 +255,16 @@ bool DataModel::simulate(){
   /**
    * @brief elastic solid component
    */
-  static hj::util::high_resolution_clock hrc_st;
-  static double time_leave = -1.0;
-  double time_start = hrc_st.ms();
-  if (time_leave > 0)
-  {
-    // cout << "out side time:" << time_start - time_leave << endl;
-  } else {
-    cout << "[zsw_info]" << __FILE__ << ":" << __LINE__ << ":"
-         << "shell nodes " <<  shell_nodes_.size(1) << "*" << shell_nodes_.size(2) << endl; 
-
-  }
-  
   if(_simulator){
-    hj::util::high_resolution_clock hrc;
-    double begin = hrc.ms();
-    VectorXd colForce;
-    passObj_->calCollisionForce(_volObj->getTetMesh(), getU(), colForce);
-    // static bool print_flag = true;
-    // if(print_flag)
-    // {
-    //   cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": col force"
-    //      << colForce.transpose() << endl;
-    //   print_flag = false;
-    // }
-    static int times = 0;
-    if(times >50)
-    {
-      _simulator->setExtForce(colForce);
-      // cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": force add!"
-      //      << endl;
+    if (_passiveObject && _simulator && _volObj && _volObj->getTetMesh()){
+      static VectorXd f_ext;
+      _passiveObject->collision(_volObj->getTetMesh(),getU(),f_ext);
+      _simulator->setExtForce(f_ext);
     }
-    else { ++times; }
     succ = _simulator->forward();
-    //	_volObj->interpolate(getU());
-    // cout << "elastic deformation : " << hrc.ms() - begin << endl;
+    for (int i = 1; i < steps; ++i){
+      _simulator->forward();
+    }
   }
   /**
    * @brief shell deformation component
@@ -304,8 +277,6 @@ bool DataModel::simulate(){
     xq_ = q_ * B_;
     shell_deformer_->deform(shell_nodes_, xq_);
     jtf::mesh::cal_point_normal(shell_mesh_, shell_nodes_, shell_normal_);
-
   }
-  time_leave = hrc_st.ms();
   return succ;
 }

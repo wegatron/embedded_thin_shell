@@ -66,8 +66,8 @@ namespace SIMULATOR{
       if (_renderType & SHELL) {
         drawShellMesh();
       }
-      if ( _dataModel->passObj_)
-        drawPassObj();
+      /* if ( _dataModel->passObj_) */
+      /*   drawPassObj(); */
     }
     pTextForRender getTextForRender()const{
       return _text;

@@ -17,7 +17,7 @@ SelectCtrl::SelectCtrl(pQGLViewerExt viewer,pSelectable selector,const int minSe
   viewer->addSelfRenderEle(select_rect);
 
   add_mouse_button = Qt::LeftButton;
-  rm_modify_key = Qt::ShiftModifier;
+  add_modify_key = Qt::ShiftModifier;
 
   rm_mouse_button = Qt::RightButton;
   rm_modify_key = Qt::ShiftModifier;
@@ -69,8 +69,10 @@ bool SelectCtrl::press (QMouseEvent *e){
   }
 
   begin_select = false;
+  cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": press mouse cached in selectCtrl"
+       << endl;
   if (e->modifiers() == add_modify_key&&e->button()==add_mouse_button){
-
+    cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": sel_status add_ele" << endl;
 	select_rect->setTopLeft(e->pos());
 	select_rect->setBottomRight(e->pos());
 	begin_select = true;

@@ -122,6 +122,7 @@ namespace SIMULATOR{
     //********MY MODIFY***************************************
 
  public :
+    int steps; // number of steps for each simulation.
     pPassiveObject _passiveObject;
     pPassObj passObj_;
     matrix<size_t>         tet_mesh_, shell_mesh_, ball_mesh_;

@@ -31,12 +31,13 @@ void MainWindow::createComponents(){
 
   // passive objects
   _passiveObject = pPassiveObject(new PassiveBall(_viewer));
+  _passiveObject->move(0,-0.5,1.0);
   manipulation_passive_obj = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, _passiveObject));
   manipulation_passive_obj->setEnable(true);
   _viewer->addSelfRenderEle(_passiveObject);
   _dataModel->setPassiveObject(_passiveObject);
 
-  _selCtrl->setEnable(false);
+  _selCtrl->setEnable(true);
 }
 
 void MainWindow::createConnections(){
@@ -96,11 +97,16 @@ void MainWindow::loadInitFile(const string filename){
 	INFO_LOG("con_penalty: "<<con_penalty );
 	_fileDialog->warning(succ);
 
+        
+        
         string passive_obj_file;
 	if (_passiveObject&&jsonf.readFilePath("passive_object", passive_obj_file, true)){
-	  _passiveObject->load(passive_obj_file);
+          _passiveObject->load(passive_obj_file);
+          double collision_penalty = 1.0f;
+          if (jsonf.read("collision_penalty", collision_penalty)){
+            _passiveObject->setCollisionPenalty(collision_penalty);
+          }
 	}
-        
   }else{
 
 	ERROR_LOG("file " << filename <<" is not exist!" );
