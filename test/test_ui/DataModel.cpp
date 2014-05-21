@@ -12,58 +12,6 @@
 
 using namespace SIMULATOR;
 
-void Ball::calCollisionForce(const pTetMesh& tet_mesh, const VectorXd& U,
-                             VectorXd& force) const
-{
-  const VVec3d& tet_nodes = tet_mesh->nodes();
-  Vector3d center;
-  int i=0;
-  // cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": " << nodes_.size(2)
-  //      << "ball nodes_" << endl;
-  for(; i<nodes_.size(2); ++i)
-  {
-    center(0) += nodes_(0,i);
-    center(1) += nodes_(1,i);
-    center(2) += nodes_(2,i);
-  }
-  center = center/i;
-  const double radius = (center - Vector3d( nodes_(0,0), nodes_(1,0), nodes_(2,0) )).norm();
-  // cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": ball center(" << center.transpose()
-  //      << "), " << radius << endl;
-  force.resize(tet_nodes.size()*3);
-  force.setZero();
-  for(i=0; i<tet_nodes.size(); ++i)
-  {
-    // Vector3d diff= tet_nodes[i]-center+U.block(3*i,0,3,1);
-    // double diff_norm = diff.norm();
-    // if (diff_norm < radius)
-    // {
-    //   double forcenorm = 10000.0*(radius-diff_norm)/radius;
-    //   force.block(i*3,0,3,1) = (forcenorm/diff_norm)*diff;
-    //   // force.block(i*3,0,3,1) = Vector3d(1,1,1);
-    // }
-    
-    // if (diff_norm < radius)
-    // {
-    //   // cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": node " << i << endl;
-    //   double forcenorm = 1000.0/(diff_norm-0.7*radius);
-    //   if(forcenorm < 0 )
-    //   {
-    //     cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": force norm < 0!"
-    //          << endl;
-    //     exit(1);
-    //   }
-    //   force.block(i*3,0,3,1) = diff*forcenorm/diff_norm;
-    // }
-  }
-}
-
-void Ball::move(const zjucad::matrix::matrix<double>& dis)
-{
-  assert(dis.size(1)==3 && dis.size(2)==1);
-  nodes_ += dis * zjucad::matrix::ones<double>(nodes_.size(2),1);
-}
-
 DataModel::DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
 
     assert(embeding);
@@ -137,10 +85,10 @@ bool DataModel::loadSetting(const string filename){
       meancords = meancords/i;
     }
   }
-  passObj_ = pPassObj(new Ball());
-  jtf::mesh::load_obj("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/sofa/model/ball_new.obj",
-                      passObj_->mesh_, passObj_->nodes_);
-  jtf::mesh::cal_point_normal(passObj_->mesh_, passObj_->nodes_, passObj_->normal_);
+  // passObj_ = pPassObj(new Ball());
+  // jtf::mesh::load_obj("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/sofa/model/ball_new.obj",
+  //                     passObj_->mesh_, passObj_->nodes_);
+  // jtf::mesh::cal_point_normal(passObj_->mesh_, passObj_->nodes_, passObj_->normal_);
 
   vector<int> fixed_nodes;
   if(jsonf.readVecFile("fixed_nodes",fixed_nodes,TEXT)){

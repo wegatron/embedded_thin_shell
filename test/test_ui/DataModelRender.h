@@ -140,26 +140,6 @@ namespace SIMULATOR{
       glEnd();
       glDisable(GL_LIGHTING);
     }
-    void drawPassObj() const {
-      /* cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": draw pass obj" << endl; */
-      const matrix<size_t> faces = _dataModel->passObj_->mesh_;
-      const matrix<double> verts = _dataModel->passObj_->nodes_;
-      const matrix<double> norms = _dataModel->passObj_->normal_;
-
-      cout << faces.size() << ":" << verts.size() << ":" << norms.size() << endl;
-      glEnable(GL_SMOOTH);
-      glEnable(GL_LIGHTING);
-      glDisable(GL_COLOR_MATERIAL);
-
-      glBegin(GL_TRIANGLES);
-      for (int f = 0; f < faces.size(); ++f){
-        const int v3 = faces[f]*3;
-        glNormal3d(norms[v3+0],norms[v3+1],norms[v3+2]);
-        glVertex3d(verts[v3+0],verts[v3+1],verts[v3+2]);
-      }
-      glEnd();
-      glDisable(GL_LIGHTING);
-    }
  private:
     VolNodeGroupRender node_group_render;
     pDataModel _dataModel;

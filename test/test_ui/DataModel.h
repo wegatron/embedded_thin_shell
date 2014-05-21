@@ -20,29 +20,7 @@ using namespace std;
 using namespace UTILITY;
 using namespace zjucad::matrix;
 
-namespace SIMULATOR{
-
-  class PassObj{
- public:
-    matrix<size_t> mesh_;
-    matrix<double> nodes_;
-    matrix<double> normal_;
-    
-    virtual void calCollisionForce(const pTetMesh& tet_mesh, const VectorXd& U,
-                                   VectorXd& force) const = 0;
-    virtual void move(const zjucad::matrix::matrix<double>& dis) =0;
-  };
-  typedef boost::shared_ptr<PassObj> pPassObj;
-
-  class Ball : public PassObj
-  {
- public:
-    void calCollisionForce(const pTetMesh& tet_mesh, const VectorXd& U,
-                           VectorXd& force) const;
-    void move(const zjucad::matrix::matrix<double>& dis);
-  };
-
-  
+namespace SIMULATOR{  
   /**
    * @class DataModel contains all the data for simulation.
    * 
@@ -124,10 +102,9 @@ namespace SIMULATOR{
  public :
     int steps; // number of steps for each simulation.
     pPassiveObject _passiveObject;
-    pPassObj passObj_;
-    matrix<size_t>         tet_mesh_, shell_mesh_, ball_mesh_;
-    matrix<double>         tet_nodes_, shell_nodes_, ball_nodes_;
-    matrix<double>         shell_normal_, ball_normal_;
+    matrix<size_t>         tet_mesh_, shell_mesh_;
+    matrix<double>         tet_nodes_, shell_nodes_;
+    matrix<double>         shell_normal_;
     shared_ptr<deformer>   shell_deformer_;
     matrix<double>         B_;
     map<size_t, vector<pair<size_t, string>>> regions_;
