@@ -96,7 +96,6 @@ namespace SIMULATOR{
     PartialConstraints _partialCon;
     pSimulator _simulator;
     pTetMeshEmbeding _volObj;
-
     //********MY MODIFY***************************************
 
  public :
