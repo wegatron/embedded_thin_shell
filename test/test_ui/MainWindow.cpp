@@ -14,7 +14,7 @@ void MainWindow::createComponents(){
   _viewer = _mainwindow.left_view;
   _fileDialog = pFileDialog(new FileDialog(this));
   _viewer->show3DGrid();
-  _viewer->startAnimation();
+  // _viewer->startAnimation();
 
   // data model	  
   pTetMeshEmbeding embeding = pTetMeshEmbeding(new TetMeshEmbeding());

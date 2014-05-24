@@ -292,7 +292,6 @@ void QGLViewerExt::select (QRect select_rect){
 }
 
 void QGLViewerExt::endSelection(const QPoint&p){
-  cout << "[INFO]" <<  __FILE__ << "," << __LINE__ << ": endselection" << endl;
   const GLuint* select_buffer = selectBuffer();
   if (select_buffer != NULL && selector != NULL){
 
