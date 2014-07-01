@@ -176,29 +176,29 @@ void case_common(const char *ini_file)
     tet_nodes(2,i) = nodes[i][2];
   }
 
-  zjucad::matrix::matrix<size_t> shell_cell;
-  zjucad::matrix::matrix<double> shell_nodes;
-  zjucad::matrix::matrix<double> shell_normal;
-  gen_outside_shell(tet_cell, tet_nodes, shell_cell, shell_nodes, shell_normal, __SUBDIVISION_TIME, __EMBED_DEPTH);
+  // zjucad::matrix::matrix<size_t> shell_cell;
+  // zjucad::matrix::matrix<double> shell_nodes;
+  // zjucad::matrix::matrix<double> shell_normal;
+  // gen_outside_shell(tet_cell, tet_nodes, shell_cell, shell_nodes, shell_normal, __SUBDIVISION_TIME, __EMBED_DEPTH);
 
-  size_t row = tet_nodes.size(2);
-  size_t col = shell_nodes.size(2);
-  hj::sparse::spm_csc<double> B(row, col);
-  tet_embed(tet_nodes, tet_cell, shell_nodes, B);
-  matrix<double> B_(row, col);
-  for (size_t j = 0; j < col; ++j)
-    for (size_t i = 0; i < row; ++i)
-      B_(i, j) = B(i, j);
+  // size_t row = tet_nodes.size(2);
+  // size_t col = shell_nodes.size(2);
+  // hj::sparse::spm_csc<double> B(row, col);
+  // tet_embed(tet_nodes, tet_cell, shell_nodes, B);
+  // matrix<double> B_(row, col);
+  // for (size_t j = 0; j < col; ++j)
+  //   for (size_t i = 0; i < row; ++i)
+  //     B_(i, j) = B(i, j);
 
-  cluster_machine handle(shell_cell, shell_nodes, __CLUSTER_RADIUS);
-  handle.partition(__REGION_COUNT);
+  // cluster_machine handle(shell_cell, shell_nodes, __CLUSTER_RADIUS);
+  // handle.partition(__REGION_COUNT);
 
-  deformer shell_deformer(shell_cell, shell_nodes, shell_nodes, handle.regions_);
+  // deformer shell_deformer(shell_cell, shell_nodes, shell_nodes, handle.regions_);
 
-  matrix<double> dx(tet_nodes.size(1), tet_nodes.size(2)),
-    q(tet_nodes.size(1), tet_nodes.size(2)),
-    xq(shell_nodes.size(1), shell_nodes.size(2));
-  
+  // matrix<double> dx(tet_nodes.size(1), tet_nodes.size(2)),
+  //   q(tet_nodes.size(1), tet_nodes.size(2)),
+  //   xq(shell_nodes.size(1), shell_nodes.size(2));
+
   Timer timer;
   { // set external forces, then simulate 50 steps
     const VVec3d &nodes = tet_mesh->nodes();
@@ -207,15 +207,15 @@ void case_common(const char *ini_file)
     cacu_gravity(tet_mesh, gravity, plane_index, front_collision);
     simulator->setExtForce(gravity);
     record_u.push_back(simulator->getFullDisp());
-  
+
     for (int i = 0; i < steps; ++i){
       simulator->forward();
       VectorXd &v = simulator->getV();
       VectorXd &u = simulator->getModifyFullDisp();
-      // collision_ball();
+
       //void collision_plane(const VVec3d &nodes, VectorXd &v, VectorXd &u, double kd, int plane_index, double plane_height, bool front)
       collision_plane(tet_mesh->nodes(), v, u, kd, plane_index, plane_height, front_collision);
-
+      
       if(i%output_steps == 0) {
         cout << "step:" << i << endl;
         VectorXd disp = simulator->getFullDisp();
