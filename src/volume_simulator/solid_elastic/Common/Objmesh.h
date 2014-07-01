@@ -68,6 +68,9 @@ namespace UTILITY{
 	const Eigen::VectorXd &getVerts()const{
 	  return _verts;
 	}
+        Eigen::VectorXd &getModifyVerts(){
+          return _verts;
+        }
 	const Eigen::VectorXd &getVertNormal()const{
 	  return _vertNormal;
 	}

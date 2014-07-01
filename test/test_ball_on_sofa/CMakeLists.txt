@@ -6,9 +6,6 @@ include_directories(${BULLET_INCLUDE_DIR})
 link_directories(${BULLET_LINK_DIR})
 # end use bullet
 
-
-
-
 aux_source_directory(. source)
 add_executable(test_ball_on_sofa ${source})
 target_link_libraries(test_ball_on_sofa
@@ -17,4 +14,4 @@ libBulletCollision_gmake_x64_release.a
 libLinearMath_gmake_x64_release.a
 ${Boost_LIBRARIES}
 )
- 
+

@@ -94,7 +94,6 @@ namespace UTILITY{
 	  bool succ = false;
 	  if ( inf.open(init_filename) ){
 		string filename;
-                cout << "zsw_info parase inf file:" << __FILE__ << ":" << __LINE__ << ":" << endl;
 		if ( inf.readFilePath("obj_file",filename,true)){
 		  succ = volobjmesh->loadObjMesh(filename);
 		}

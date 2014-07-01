@@ -9,6 +9,7 @@
 #include "interpolator/interpolator.h"
 #include "shell_deformer/cluster.h"
 #include "conf_para.h"
+#include "Timer.h"
 
 using namespace SIMULATOR;
 
@@ -64,7 +65,6 @@ bool DataModel::loadSetting(const string filename){
       // Vector3f meancords=meanCords(vol_nodes);
       // Vector3f maxcords=maxCords(vol_nodes);
 
-
       Vector3d maxcords = vol_nodes[0];
       for(int i=1; i<vol_nodes.size(); ++i)
       {
@@ -99,7 +99,6 @@ bool DataModel::loadSetting(const string filename){
   if (_simulator){
     succ &= _simulator->init(filename);
   }
-
   print();
   return succ;
 }
@@ -197,34 +196,56 @@ void DataModel::resetPartialCon(){
     _simulator->setUc(con_uc);
 }
 
+static void movePassiveObjCircle(pPassiveObject passiveObj)
+{
+  static int time = 0;
+  if (time < 9) {
+    passiveObj->moveFromCurrent(0,0,-0.05);
+  } else if(time%80 < 20) {
+    passiveObj->moveFromCurrent(-0.05,0,0);
+  } else if(time%80 < 40) {
+    passiveObj->moveFromCurrent(0, -0.05, 0);
+  } else if(time%80 < 60) {
+    passiveObj->moveFromCurrent(0.05, 0, 0);
+  } else {
+    passiveObj->moveFromCurrent(0, 0.05, 0);
+  }
+  ++time;
+}
+
 bool DataModel::simulate(){
 
-  bool succ = false;
+  bool succ = true;
+
+  // movePassiveObjCircle(_passiveObject);
   /**
    * @brief elastic solid component
    */
-  if(_simulator){
-    if (_passiveObject && _simulator && _volObj && _volObj->getTetMesh()){
-      static VectorXd f_ext;
-      _passiveObject->collision(_volObj->getTetMesh(),getU(),f_ext);
-      _simulator->setExtForce(f_ext);
-    }
-    succ = _simulator->forward();
-    for (int i = 1; i < steps; ++i){
-      _simulator->forward();
-    }
-  }
-  /**
-   * @brief shell deformation component
-   */
-  {
-    VectorXd disp = getU();
-    std::copy(disp.data(), disp.data() + disp.size(), dx_.begin());
-    q_ = tet_nodes_ + dx_;
+  if (_passiveObject && _simulator && _volObj && _volObj->getTetMesh()) {
+    int i=0;
+    do{
+      ++i;
+      const VectorXd tempV = _simulator->getV();
+      VectorXd &refV = _simulator->getV();
+      _passiveObject->collisionVelocity(_volObj->getTetMesh(), getU(), _simulator->getV(),
+                                        _simulator->getTimestep());
+      succ = succ && _simulator->forward();
+    }while(i<steps);
 
-    xq_ = q_ * B_;
-    shell_deformer_->deform(shell_nodes_, xq_);
-    jtf::mesh::cal_point_normal(shell_mesh_, shell_nodes_, shell_normal_);
+    /**
+     * @brief shell deformation component
+     */
+    {
+      VectorXd disp = getU();
+      std::copy(disp.data(), disp.data() + disp.size(), dx_.begin());
+      q_ = tet_nodes_ + dx_;
+
+      xq_ = q_ * B_;
+      shell_deformer_->deform(shell_nodes_, xq_);
+      jtf::mesh::cal_point_normal(shell_mesh_, shell_nodes_, shell_normal_);
+    }
+  } else {
+    succ = false;
   }
   return succ;
 }

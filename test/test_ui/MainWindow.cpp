@@ -31,7 +31,7 @@ void MainWindow::createComponents(){
 
   // passive objects
   _passiveObject = pPassiveObject(new PassiveBall(_viewer));
-  _passiveObject->move(0,-0.5,1.0);
+  _passiveObject->move(-0.3,0,1.0);
   manipulation_passive_obj = pLocalframeManipulatoionCtrl(new LocalframeManipulatoionCtrl(_viewer, _passiveObject));
   manipulation_passive_obj->setEnable(true);
   _viewer->addSelfRenderEle(_passiveObject);
@@ -91,7 +91,7 @@ void MainWindow::loadInitFile(const string filename){
         
 	JsonFilePaser jsonf;
 	jsonf.open(filename);
-	double con_penalty;
+	double collision_k_stiffness, collision_k_limit, con_penalty;
 	jsonf.read("con_penalty", con_penalty, 1.0);
 	_perturb->setPerturCompilance(con_penalty);
 	INFO_LOG("con_penalty: "<<con_penalty );
@@ -106,6 +106,13 @@ void MainWindow::loadInitFile(const string filename){
           if (jsonf.read("collision_penalty", collision_penalty)){
             _passiveObject->setCollisionPenalty(collision_penalty);
           }
+          if (jsonf.read("collision_k_stiffness", collision_k_stiffness)){
+            _passiveObject->setKStiffness(collision_k_stiffness);
+          }
+          if (jsonf.read("collision_k_limit", collision_k_limit)){
+            _passiveObject->setKLimit(collision_k_limit);
+          }
+
 	}
   }else{
 

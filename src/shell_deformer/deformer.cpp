@@ -8,7 +8,7 @@
 #include <hjlib/util/hrclock.h>
 #include <jtflib/optimizer/optimizer.h>
 // #include "../parallize/linear_solver.h"
-#include "../parallize/SQP.h"
+// #include "../parallize/SQP.h"
 #include "cluster.h"
 
 
@@ -22,7 +22,7 @@ typedef zjucad::matrix::matrix<double> matrixd;
 typedef hj::math_func::math_func_t<double, int32_t> func_t;
 
 
-#define __CJ_SQP__
+//#define __CJ_SQP__
 #define CJ_LINEAR_TYPE "PETsc"
 
 

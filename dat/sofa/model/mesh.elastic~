@@ -1,6 +1,6 @@
-*groups 1
+*groups 0
 
 *MATERIAL, NAME=GROUP_0
 *ELASTIC
-0.25, 0.45
-*DENSITY 1000
+2e5, 0.45
+*DENSITY 100

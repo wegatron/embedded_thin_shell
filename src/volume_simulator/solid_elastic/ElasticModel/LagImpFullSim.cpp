@@ -93,7 +93,12 @@ bool LagImpFullSim::assembleB(){
   bool succ = def_model->evaluateF(u,f);
   if (succ){
 	assert_eq (M.rows(), n3);
+        // Vector3d changev;
+        // changev << 1000,2000,3000;
+        // v.block(88*3,0, 3,1) = changev;
+        // cout << "velocity:" << v.transpose() << endl;
   	b.head(n3) = M*v.head(n3) + h*(fext-f);
+        // cout << "ref norm in assembleB:" << v.norm() << endl;
   }
   return succ;
 }

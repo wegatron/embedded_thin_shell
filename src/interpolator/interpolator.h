@@ -3,7 +3,7 @@
 
 #include <zjucad/matrix/matrix.h>
 #include <hjlib/sparse/sparse.h>
-
+#include <hjlib/sparse/deprecated.h>
 
 int gen_outside_shell(const zjucad::matrix::matrix<size_t>   &tet_mesh,
                       const zjucad::matrix::matrix<double>   &tet_nodes,

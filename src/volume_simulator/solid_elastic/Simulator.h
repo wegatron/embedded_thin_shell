@@ -38,6 +38,23 @@ namespace SIMULATOR{
 	virtual bool forward() = 0;
 
 	virtual const VectorXd &getFullDisp()const = 0;
+        virtual double getTimestep() const{
+          cout << "error " << __FILE__ << __LINE__ << endl;
+          exit(0);
+          return 0.0;
+        }
+        virtual VectorXd& getV() const {
+          cout << "error " << __FILE__ << __LINE__ << endl;
+          static VectorXd tmp;
+          return tmp;
+        }
+
+        virtual VectorXd &getModifyFullDisp() const {
+          cout << "error " << __FILE__ << __LINE__ << endl;
+          static VectorXd tmp;
+          return tmp;
+        }
+
 	virtual bool computeElasticForce(const VectorXd &u,VectorXd &f)const{
 	  return false;
 	}

@@ -44,13 +44,14 @@ int main(int argc, char *argv[]){
 	cout << "num of fixed nodes: " << nodes.size() << endl;
 	simulator->setConNodes(nodes);
 	VectorXd uc(nodes.size()*3);
-	uc.setZero();	
+	uc.setZero();
 	simulator->setUc(uc);
   }
 
   // simulation for 200 steps, record displacements
   vector<VectorXd> record_u;
   Timer timer;
+  cout << "nodes size:" << tet_mesh->nodes().size() << endl;
   { // set external forces, then simulate 50 steps
 	const int nodeId = 333;
     //const double f[3] = {204.175, -210.993, 0};
@@ -79,6 +80,6 @@ int main(int argc, char *argv[]){
   }
 
   cout << "[INFO]DONE!\n";
-          
+
   return 0;
 }

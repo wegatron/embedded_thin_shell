@@ -5,7 +5,7 @@ target_link_libraries(test_cluster
 jtf-mesh
 zjucad-tri_sub
 hj_ANN_c
-  ${Lapack_LIBRARIES}
+    ${LAPACK_LIBRARIES}
 ${Boost_libraries}
 )
 

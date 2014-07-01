@@ -111,20 +111,25 @@ namespace SIMULATOR{
 	  for (int vertex_id = 0; vertex_id < n; ++vertex_id){
 		fext[vertex_id*3+0] = force_x;
 		fext[vertex_id*3+1] = force_y;
-		fext[vertex_id*3+2] = force_z;    
+		fext[vertex_id*3+2] = force_z;
 	  }
 	}
 
 	// simulation
 	virtual bool forward() = 0;
-	
-	// get results
 	const VectorXd &getU()const{
 	  return u;
 	}
+        VectorXd &getModifyU(){
+          return u;
+        }
 	const VectorXd &getV()const{
 	  return v;
 	}
+        // velocity for modification added by shengweiZHANG
+        VectorXd& getVelocity(){
+          return v;
+        }
 	int getDim()const{
 	  if (def_model){
 		return def_model->dimension();
@@ -132,6 +137,7 @@ namespace SIMULATOR{
 	  return 0;
 	}
 	double getTimestep()const{
+          /* cout << __FILE__ << __LINE__ << ": h = " << h << endl;  */
 	  return h;
 	}
 	double getAlphaK()const{

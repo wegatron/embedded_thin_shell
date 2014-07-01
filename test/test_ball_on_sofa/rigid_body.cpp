@@ -5,8 +5,7 @@
 
 
 using namespace std;
-/*
- *
+
 rigid_bodys::rigid_bodys(const double gravity, const double dt)
     : _gravity(gravity), _dt(dt), _rigidImpulse(0.0, 0.0, 0.0)
 {
@@ -318,5 +317,3 @@ btRigidBody* rigid_bodys::add_rigid_body(const double mass, const btTransform &s
 
     return body;
 }
-
-*/

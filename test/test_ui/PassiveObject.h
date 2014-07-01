@@ -31,6 +31,14 @@ namespace SIMULATOR{
 	  assert_gt(p,0.0f);
 	  collision_force_penalty = p;
 	}
+        void setKStiffness(double k_stiffness)
+        {
+          k_stiffness_ = k_stiffness;
+        }
+        void setKLimit(double k_limit)
+        {
+          k_limit_=k_limit;
+        }
 	virtual void draw()const;
 
 	int totalEleNum()const{
@@ -54,14 +62,47 @@ namespace SIMULATOR{
 	  current_center(1,0)=initial_center[1] + y;
 	  current_center(2,0) =initial_center[2] + z;
 	}
-	virtual void collision(pTetMesh_const tet_mesh, const VectorXd &u, VectorXd &coll_forces){
-	  if (tet_mesh){
-		coll_forces.resize(tet_mesh->nodes().size()*3);
-		coll_forces.setZero();
+        virtual void moveFromCurrent (const double x, const double y, const double z )
+        {
+          current_center(0,0) += x;
+	  current_center(1,0) += y;
+	  current_center(2,0) += z;
+        }
+	virtual void collisionVelocity(pTetMesh_const tet_mesh, const VectorXd &u, VectorXd &velocity, double time_step){
+          cout << __FILE__ << __LINE__ << "error!!!" <<  endl;
+	  /* if (tet_mesh){ */
+	  /*       coll_forces.resize(tet_mesh->nodes().size()*3); */
+	  /*       coll_forces.setZero(); */
+	  /* }else{ */
+	  /*       coll_forces.resize(0); */
+	  /* } */
+	}
+
+        virtual void collisionDisp(pTetMesh_const tet_mesh, VectorXd &fulldisp, VectorXd &v, double time_step)
+        {
+          cout << __FILE__ << __LINE__ << "error!!!" <<  endl;
+        }
+        virtual void collisionForceOri(pTetMesh_const tet_mesh, const VectorXd &u,VectorXd &force)
+        {
+          if (tet_mesh){
+		force.resize(tet_mesh->nodes().size()*3);
+		force.setZero();
 	  }else{
-		coll_forces.resize(0);
+		force.resize(0);
+	  }
+        }
+        
+        virtual void collisionForce(pTetMesh_const tet_mesh, const VectorXd &u,VectorXd &velocity, VectorXd &force, double time_step, vector<int>& col_nodes){
+	  if (tet_mesh){
+		force.resize(tet_mesh->nodes().size()*3);
+		force.setZero();
+	  }else{
+		force.resize(0);
 	  }
 	}
+        virtual void collisionAdj(pTetMesh_const tet_mesh, VectorXd &u, VectorXd &v, double time_step, const vector<int> &col_nodes)
+        {
+        }
 
   protected:
 	virtual void drawMesh()const{
@@ -69,6 +110,8 @@ namespace SIMULATOR{
 	}
 
   protected:
+        double k_stiffness_;
+        double k_limit_;
 	Vector3d initial_center;
 	Matrix<double,3,-1> current_center;
 	double scale;
@@ -84,7 +127,14 @@ namespace SIMULATOR{
   public:
 	PassiveBall(pQGLViewerExt view, const int slice = 100):
 	  PassiveObject(view),slice_num(slice){}
-	void collision(pTetMesh_const tet_mesh, const VectorXd &u, VectorXd &coll_forces);
+          void collisionVelocity(pTetMesh_const tet_mesh, const VectorXd &u, VectorXd &velocity, double time_step);
+          /* virtual void collisionForce(pTetMesh_const tet_mesh, const VectorXd &u, VectorXd &coll_forces); */
+          void collisionForce(pTetMesh_const tet_mesh, const VectorXd &u,VectorXd &velocity, VectorXd &force, double time_step, vector<int>& col_nodes);
+
+          void collisionAdj(pTetMesh_const tet_mesh, VectorXd &u, VectorXd &v, double time_step, const vector<int> &col_nodes);
+
+          void collisionForceOri(pTetMesh_const tet_mesh, const VectorXd &u,VectorXd &force);
+          void collisionDisp(pTetMesh_const tet_mesh, VectorXd &fulldisp, VectorXd &v, double time_step);
 
   protected:
 	void drawMesh()const{

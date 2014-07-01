@@ -39,7 +39,7 @@ namespace SIMULATOR{
 	}
 
 	void setConNodes(const vector<int> &nodes){
-
+          cout << "set con nodes!!!!!!!!!!!!!!!!" << endl;
 	  if (nodes.size() <= 0){
 		removeAllConNodes();
 		return;
@@ -76,6 +76,19 @@ namespace SIMULATOR{
 	const VectorXd &getFullDisp()const{
 	  return simulator->getU();
 	}
+
+        VectorXd &getModifyFullDisp() const {
+          return simulator->getModifyU();
+        }
+
+        VectorXd& getV() const {
+          return simulator->getVelocity();
+        }
+        
+        double getTimestep() const
+        {
+          return simulator->getTimestep();
+        }
 	bool computeElasticForce(const VectorXd &u,VectorXd &f)const{
 	  if (stvkModel)
 		return stvkModel->evaluateF(u,f);

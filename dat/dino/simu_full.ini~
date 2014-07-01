@@ -1,6 +1,6 @@
 {
 
-"init_file_dir": "/home/chenjiong/usr/WorkSpace/embedded_shell/dat/dino/",
+"init_file_dir": "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/dino/",
 "simulator"    : "full_stvk",
 
 "h"            : 0.005,
@@ -10,6 +10,6 @@
 
 "vol_file"       : "model/mesh.abq",
 "elastic_mtl"    : "model/mesh.elastic",
-"obj_file"       : "model/mesh.obj"
-
+"obj_file"       : "model/mesh.obj",
+"vol2obj_weights": "model/interp_weights.txt"
 }
