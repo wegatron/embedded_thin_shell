@@ -22,6 +22,7 @@ void print_center(UTILITY::Objmesh &obj) {
 
   cout << "center:" << (1.0/num)*sum.transpose() << endl;
 }
+
 class MovingBall
 {
 public:

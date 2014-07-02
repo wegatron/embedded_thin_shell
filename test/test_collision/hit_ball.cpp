@@ -65,32 +65,6 @@ void collision_plane(const VVec3d &nodes, VectorXd &v, VectorXd &u, double kd, i
   }
 }
 
-void collision_ball(const VVec3d &nodes, VectorXd &v, VectorXd &u, const double kd, Vector3d &center, Vector3d &vball, double r, int surface_index, double surface_height, double limit_intersect,
-                    double kstiffness, double time_step)
-{
-  // step forward
-  double intersect = surface_height - center[surface_index] - r;
-  vball[surface_index] =  vball[surface_index] - 9.8 * time_step + kstiffness * intersect;
-  center += vball * time_step;
-
-  intersect = surface_height - (center[surface_index] - r);
-  if (intersect > 0) {
-    if (intersect > limit_intersect) {
-      vball[surface_index] = 0.0;
-      center[surface_index] = surface_height - limit_intersect + r;
-    }
-
-    // for (int i=0; i<nodes.size(); ++i) {
-    //   Vector3d diff = nodes[i] + u.segment<3>(i*3) - center;
-    //   if (diff.norm() < r) {
-    //     u.segment<3>(i*3) += (r-diff.norm())*(diff/diff.norm());
-    //     v(i*3+surface_index) = vball[surface_index];
-    //   }
-    // }
-  }
-}
-
-
 void case_common(const char *ini_file)
 {
   // open init json file
@@ -120,7 +94,7 @@ void case_common(const char *ini_file)
     succ &= jsonf.read("kd", kd);
   }
   assert(succ);
-  
+
   pTetMesh tet_mesh = pTetMesh(new TetMesh());
   { // init tetrahedron mesh.
     string vol_file;
@@ -215,7 +189,8 @@ void case_common(const char *ini_file)
 
       //void collision_plane(const VVec3d &nodes, VectorXd &v, VectorXd &u, double kd, int plane_index, double plane_height, bool front)
       collision_plane(tet_mesh->nodes(), v, u, kd, plane_index, plane_height, front_collision);
-      
+      // collision_plane(tet_mesh->nodes(), v, u, kd,
+      // colision_ball()
       if(i%output_steps == 0) {
         cout << "step:" << i << endl;
         VectorXd disp = simulator->getFullDisp();
@@ -239,13 +214,6 @@ void case_common(const char *ini_file)
     assert(succ);
   }
   cout << "[INFO]DONE!\n";
-}
-
-void move_obj(Objmesh &obj, Vector3d diff) {
-  VectorXd &verts = obj.getModifyVerts();
-  for (int i=0; i>verts.size()/3; ++i) {
-    verts.segment<3>(i*3) += diff;
-  }
 }
 
 // a simple example demonstrate the usage of the solid simulator.
