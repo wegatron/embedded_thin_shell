@@ -10,6 +10,7 @@
 #include "shell_deformer/deformer.h"
 #include "conf_para.h"
 #include "objio.h"
+#include "move_ball.h"
 
 using namespace UTILITY;
 using namespace SIMULATOR;
@@ -37,6 +38,19 @@ void cacu_gravity(const pTetMesh tet_mesh, VectorXd& fext, int axis_index, bool 
   }
 }
 
+void collision_ball(const VVec3d &nodes,  VectorXd &u, VectorXd &extforce, const MovingBall &ball, double k)
+{
+  extforce.resize(u.size());
+  extforce.setZero();
+  double r = ball.getR();
+  for (int i=0; i<nodes.size(); ++i) {
+    Vector3d normal = nodes[i] + u.segment<3>(i*3) - ball.getCenter();
+    double diff = r - normal.norm();
+    if (diff > 0) { // collision
+        extforce.segment<3>(i*3) = k * diff * 1.0/normal.norm() * normal;
+    }
+  }
+}
 /**
  * front true is collision in the front face of that axis
  */
@@ -181,16 +195,32 @@ void case_common(const char *ini_file)
     cacu_gravity(tet_mesh, gravity, plane_index, front_collision);
     simulator->setExtForce(gravity);
     record_u.push_back(simulator->getFullDisp());
-
+    UTILITY::Objmesh obj;
+    obj.load("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/for_test_drop/hit_ball/model/ball.obj");
+    string out_file = "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/for_test_drop/hit_ball/result/ball";
+    Vector3d tmp_move;
+    tmp_move << 0,0, -0.6;
+    move_obj(obj,tmp_move);
+    MovingBall ball;
+    ball.setBounceV(2.0);
+    ball.setDeltaV(0.01);
+    ball.setDecDiff(0.38);
+    ball.setBounceDiff(0.6);
+    ball.setAxisIndex(2);
+    ball.setV(-2.0);
+    ball.setCenter(-0.548927, -0.583168, 0.4089);
+    ball.setR(0.2);
     for (int i = 0; i < steps; ++i){
       simulator->forward();
       VectorXd &v = simulator->getV();
       VectorXd &u = simulator->getModifyFullDisp();
-
+      ball.stepForward(simulator->getTimestep());
       //void collision_plane(const VVec3d &nodes, VectorXd &v, VectorXd &u, double kd, int plane_index, double plane_height, bool front)
       collision_plane(tet_mesh->nodes(), v, u, kd, plane_index, plane_height, front_collision);
+      VectorXd extforce;
+      collision_ball(tet_mesh->nodes(), u, extforce, ball, 10000);
+      simulator->setExtForce(extforce+gravity);
       // collision_plane(tet_mesh->nodes(), v, u, kd,
-      // colision_ball()
       if(i%output_steps == 0) {
         cout << "step:" << i << endl;
         VectorXd disp = simulator->getFullDisp();

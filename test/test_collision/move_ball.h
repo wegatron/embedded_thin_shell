@@ -4,8 +4,12 @@ class MovingBall
 {
  public:
   MovingBall() { state_ = 0; acc_diff_ = diff_ = 0; v_ = 0;}
-  void setCenter (Vector3d& c) {
-    center_ = c;
+  void setR (double r) { r_ = r; }
+  double getR () { return r_; }
+  void setCenter (double x, double y, double z) {
+    center_ [0] = x;
+    center_ [1] = y;
+    center_ [2] = z;
   }
   const Eigen::Vector3d getCenter () {
     return center_;
@@ -58,6 +62,7 @@ class MovingBall
   }
  private:
   Vector3d center_;
+  double r_;
   double acc_diff_;
   double diff_;
   double bounce_v_;
@@ -67,4 +72,11 @@ class MovingBall
   double bounce_diff_;
   int axis_index_;
   int state_; // 0 moving 1:starting decrease velocity; 2:bounce with fix velocity
-};
+  };
+
+void move_obj(UTILITY::Objmesh &obj, Vector3d &diff) {
+  VectorXd &verts = obj.getModifyVerts();
+  for (int i=0; i<verts.size()/3; ++i) {
+    verts.segment<3>(i*3) += diff;
+  }
+}
