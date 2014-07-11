@@ -8,16 +8,6 @@ ADD_EXECUTABLE(test_move_ball
         ball_move.cpp
 )
 
-ADD_EXECUTABLE(gen_obj_normal
-genobj_normal.cpp
-)
-
-TARGET_LINK_LIBRARIES(gen_obj_normal
-        solid_elastic
-        ${Boost_LIBRARIES}
-        jtf-mesh)
-
-
 TARGET_LINK_LIBRARIES(test_move_ball
         solid_elastic
             ${Boost_LIBRARIES}
