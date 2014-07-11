@@ -51,6 +51,7 @@ void collision_ball(const VVec3d &nodes,  VectorXd &u, VectorXd &extforce, const
     }
   }
 }
+
 /**
  * front true is collision in the front face of that axis
  */
