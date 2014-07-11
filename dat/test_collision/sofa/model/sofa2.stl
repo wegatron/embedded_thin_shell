@@ -1,0 +1,86 @@
+solid Exported from blender
+facet normal 0 0 0
+outer loop
+vertex 0.331101 -0.426753 -1.507610
+vertex 0.331101 -0.426753 0.126058
+vertex -1.314810 -0.426753 0.126058
+endloop
+endfacet
+facet normal 0 0 0
+outer loop
+vertex -1.314810 -0.426753 0.126058
+vertex -1.314810 -0.426753 -1.507610
+vertex 0.331101 -0.426753 -1.507610
+endloop
+endfacet
+facet normal 0 0 0
+outer loop
+vertex 0.331101 0.073247 -1.507610
+vertex -1.314810 0.073247 -1.507610
+vertex -1.314800 0.073247 0.126058
+endloop
+endfacet
+facet normal 0 0 0
+outer loop
+vertex -1.314800 0.073247 0.126058
+vertex 0.331101 0.073247 0.126058
+vertex 0.331101 0.073247 -1.507610
+endloop
+endfacet
+facet normal 0 0 0
+outer loop
+vertex 0.331101 -0.426753 -1.507610
+vertex 0.331101 0.073247 -1.507610
+vertex 0.331101 0.073247 0.126058
+endloop
+endfacet
+facet normal 0 0 0
+outer loop
+vertex 0.331101 0.073247 0.126058
+vertex 0.331101 -0.426753 0.126058
+vertex 0.331101 -0.426753 -1.507610
+endloop
+endfacet
+facet normal 0 0 0
+outer loop
+vertex 0.331101 -0.426753 0.126058
+vertex 0.331101 0.073247 0.126058
+vertex -1.314800 0.073247 0.126058
+endloop
+endfacet
+facet normal 0 0 0
+outer loop
+vertex -1.314800 0.073247 0.126058
+vertex -1.314810 -0.426753 0.126058
+vertex 0.331101 -0.426753 0.126058
+endloop
+endfacet
+facet normal 0 0 0
+outer loop
+vertex -1.314810 -0.426753 0.126058
+vertex -1.314800 0.073247 0.126058
+vertex -1.314810 0.073247 -1.507610
+endloop
+endfacet
+facet normal 0 0 0
+outer loop
+vertex -1.314810 0.073247 -1.507610
+vertex -1.314810 -0.426753 -1.507610
+vertex -1.314810 -0.426753 0.126058
+endloop
+endfacet
+facet normal 0 0 0
+outer loop
+vertex 0.331101 0.073247 -1.507610
+vertex 0.331101 -0.426753 -1.507610
+vertex -1.314810 -0.426753 -1.507610
+endloop
+endfacet
+facet normal 0 0 0
+outer loop
+vertex -1.314810 -0.426753 -1.507610
+vertex -1.314810 0.073247 -1.507610
+vertex 0.331101 0.073247 -1.507610
+endloop
+endfacet
+endsolid Exported from blender
