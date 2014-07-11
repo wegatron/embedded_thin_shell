@@ -18,9 +18,11 @@
 #define  __SIGMA             (2.0 * __H * pow((__Ex/3.0/__Eq),1.0/3))
 #define  __GAMMA             (__H * __Ex)
 #define  __CLUSTER_RADIUS    0.01
-#define  __SUBDIVISION_TIME  3
+#define  __SUBDIVISION_TIME  1
 #define  __EMBED_DEPTH       0.005
 #define  __REGION_COUNT      200
 #define  __NODES_NUMBER      1
+
+#define __POJ_BASE_PATH "/home/wegatron/workspace/embedded_thin_shell/branches/zhangshengwei/"
 
 #endif

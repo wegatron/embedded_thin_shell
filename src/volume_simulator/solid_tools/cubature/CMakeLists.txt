@@ -11,6 +11,6 @@ ADD_EXECUTABLE(${APP_NAME}
 TARGET_LINK_LIBRARIES(${APP_NAME}
 
   solid_elastic
-  ${LAPACK_LIBRARIES}
+  lapack
   ${Boost_LIBRARIES}
   )

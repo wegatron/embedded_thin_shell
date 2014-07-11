@@ -1,7 +1,10 @@
 #include <iostream>
-#include <Timer.h>
+
+// #include <Timer.h>
+
 #include <FullStVKSimulator.h>
-#include <SubspaceSimulator.h>
+
+// #include <SubspaceSimulator.h>
 #include <jtflib/mesh/io.h>
 #include <zjucad/matrix/io.h>
 #include <common/vtk.h>
@@ -40,16 +43,15 @@ void vtk2abq(const char *inpath, const char *outpath)
 #ifdef ABQ
 int main()
 {
-    vtk2abq("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/cylinder_16k/init.tet",
-            "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/cylinder_16k/mesh.abq");
-
+    vtk2abq(__POJ_BASE_PATH "dat/cylinder_16k/init.tet",
+            __POJ_BASE_PATH "dat/cylinder_16k/mesh.abq");
 
     matrix<size_t> mesh;
     matrix<double> node;
-    jtf::mesh::tet_mesh_read_from_zjumat("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/cylinder_16k/init.tet",
+    jtf::mesh::tet_mesh_read_from_zjumat(__POJ_BASE_PATH "dat/cylinder_16k/init.tet",
                                          &node, &mesh);
+    std::ofstream os(__POJ_BASE_PATH "dat/cylinder_16k/init.vtk");
     node /= 2.0;
-    std::ofstream os("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/cylinder_16k/init.vtk");
     tet2vtk(os, &node[0], node.size(2), &mesh[0], mesh.size(2));
     cout << "[INFO]DONE!\n";
     return 0;
@@ -58,7 +60,7 @@ int main()
 int main(int argc, char *argv[])
 {
     //************load tet mesh and elastic parameter*************************************************
-    const string ini_file = "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/new_cylinder/simu_full.ini";
+    const string ini_file = __POJ_BASE_PATH "dat/new_cylinder/simu_full.ini";
     JsonFilePaser jsonf;
     bool succ = jsonf.open(ini_file);
     assert(succ);
@@ -92,7 +94,7 @@ int main(int argc, char *argv[])
         std::copy(temp_cell.begin(), temp_cell.end(), tet_cell.begin());
         std::copy(temp_node.begin(), temp_node.end(), tet_nodes.begin());
         {
-            std::ofstream os("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/result/test_format_transition.vtk");
+            std::ofstream os(__POJ_BASE_PATH "result/test_volume/test_format_transition.vtk");
             tet2vtk(os, &tet_nodes[0], tet_nodes.size(2), &tet_cell[0], tet_cell.size(2));
         }
         cout << "[INFO]transition done!\n";
@@ -105,7 +107,7 @@ int main(int argc, char *argv[])
         matrix<double> shell_normal;
         gen_outside_shell(tet_cell, tet_nodes, shell_cell, shell_nodes, shell_normal, __SUBDIVISION_TIME, __EMBED_DEPTH);
         {
-            std::ofstream os("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/result/tet_extract_init_embed.vtk");
+            std::ofstream os(__POJ_BASE_PATH "result/test_volume/tet_extract_init_embed.vtk");
             tri2vtk(os, &shell_nodes[0], shell_nodes.size(2), &shell_cell[0], shell_cell.size(2));
         }
         size_t row = tet_nodes.size(2);
@@ -211,7 +213,7 @@ int main(int argc, char *argv[])
     matrix<double> dx(tet_nodes.size(1), tet_nodes.size(2)),
                    q(tet_nodes.size(1), tet_nodes.size(2)),
                    xq(shell_nodes.size(1), shell_nodes.size(2));
-    Timer timer;
+    // Timer timer;
     {
 //        for (int i = 35; i <= 39; ++i) {
 //            const double f[3] = {0, 0, -1000};
@@ -429,19 +431,19 @@ int main(int argc, char *argv[])
             {
                 //check the embedded mesh
                 char outfile[100];
-                sprintf(outfile, "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/result/elastic_solid_%d.vtk", i);
+                sprintf(outfile, __POJ_BASE_PATH "dat/result/test_volume/after_deformation_%d.vtk", i);
                 std::ofstream os(outfile);
                 tet2vtk(os, &q[0], q.size(2), &tet_cell[0], tet_cell.size(2));
             }
             {   //check the embedded mesh
                 char outfile[100];
-                sprintf(outfile, "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/result/emb_mesh_image_%d.vtk", i);
+                sprintf(outfile, __POJ_BASE_PATH "result/test_volume/emb_mesh_image_%d.vtk", i);
                 std::ofstream os(outfile);
                 tri2vtk(os, &xq[0], xq.size(2), &shell_cell[0], shell_cell.size(2));
             }
             {
                 char outfile[100];
-                sprintf(outfile, "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/result/after_deformation_%d.vtk", i);
+                sprintf(outfile, __POJ_BASE_PATH "result/after_deformation_%d.vtk", i);
                 std::ofstream os(outfile);
                 tri2vtk(os, &shell_nodes[0], shell_nodes.size(2), &shell_cell[0], shell_cell.size(2));
             }
@@ -464,9 +466,8 @@ int main(int argc, char *argv[])
         }
     }
 
-    timer.stop("total simulation time for 200 steps is (seconds): ");
+    // timer.stop("total simulation time for 200 steps is (seconds): ");
     cout << "[INFO]all done!\n";
-          
     return 0;
 }
 

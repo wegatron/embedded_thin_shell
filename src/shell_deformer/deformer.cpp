@@ -5,7 +5,7 @@
 #include <zjucad/ptree/ptree.h>
 #include <hjlib/math_func/func_aux.h>
 #include <hjlib/math_func/operation.h>
-#include <hjlib/util/hrclock.h>
+// #include <hjlib/util/hrclock.h>
 #include <jtflib/optimizer/optimizer.h>
 // #include "../parallize/linear_solver.h"
 // #include "../parallize/SQP.h"
@@ -162,14 +162,14 @@ deformer::deformer(const matrixst &t, const matrixd &r,
 bool deformer::deform(matrixd &x)
 {
     try {
-        static hj::util::high_resolution_clock hrc;
-        double start = hrc.ms();
+        // static hj::util::high_resolution_clock hrc;
+        // double start = hrc.ms();
 #ifdef __CJ_SQP__
         cj::optimize(*for_opt_, x, pt_);
 #else
         jtf::optimize(*for_opt_, x, pt_, nullptr, nullptr, nullptr);
+        // cout << "\nopt: " << hrc.ms() - start << endl;
 #endif
-        cout << "\nopt: " << hrc.ms() - start << endl;
     } catch ( std::exception &e ) {
         cerr << e.what() << endl;
         zjucad::show_usage_info(cerr, pt_);
@@ -182,14 +182,14 @@ bool deformer::deform(matrixd &x, const matrixd &curr_emb_node)
 {
     pos_diff_->nodes_ = curr_emb_node;
     try {
-        static hj::util::high_resolution_clock hrc;
-        double start = hrc.ms();
+        // static hj::util::high_resolution_clock hrc;
+        // double start = hrc.ms();
 #ifdef __CJ_SQP__
         cj::optimize(*for_opt_, x, pt_);
 #else
         jtf::optimize(*for_opt_, x, pt_, nullptr, nullptr, nullptr);
+        // cout << "\nopt: " << hrc.ms() - start << endl;
 #endif
-        cout << "\nopt: " << hrc.ms() - start << endl;
     } catch ( std::exception &e ) {
         cerr << e.what() << endl;
         zjucad::show_usage_info(cerr, pt_);

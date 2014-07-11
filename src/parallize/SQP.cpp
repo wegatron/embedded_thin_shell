@@ -4,7 +4,7 @@
 #include <zjucad/matrix/itr_matrix.h>
 #include <zjucad/ptree/ptree.h>
 #include <zjucad/matrix/io.h>
-#include <hjlib/util/hrclock.h>
+// #include <hjlib/util/hrclock.h>
 
 using namespace zjucad::matrix;
 using namespace std;
@@ -120,8 +120,8 @@ int SQP::solve(double *x, boost::property_tree::ptree &pt)
         size_t hes_nnz = 0;
         size_t format = -1;
 
-        static hj::util::high_resolution_clock hrc;
-        double start = hrc.ms();
+        // static hj::util::high_resolution_clock hrc;
+        // double start = hrc.ms();
         if(nnz(H_) == 0 ) { // the first run
             //if(nnz(H_) == 0 || H_.size(1) != dim) { // the first run, JTF modify.
             f_->hes(x, hes_nnz, format, 0, 0, 0);
@@ -132,7 +132,7 @@ int SQP::solve(double *x, boost::property_tree::ptree &pt)
             hes_nnz = nnz(H_);
         H_.val()(colon()) = 0;
         f_->hes(x, hes_nnz, format, &H_.val()[0], &H_.ptr()[0], &H_.idx()[0]);
-        cout << "time for assemble Hessian : " << hrc.ms() - start << endl;
+        // cout << "time for assemble Hessian : " << hrc.ms() - start << endl;
 
         bool at_border = true;
         int step_type = -1; // 0 TC, 1 NP, 2 DL

@@ -28,7 +28,7 @@ int main(int argc, char *arg[])
     scanf("%s", model);
     scanf("%d", &part_num);
     scanf("%lf", &radius);
-    sprintf(in_addr, "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/%s/init.tet", model);
+    sprintf(in_addr, string(__POJ_BASE_PATH "dat/%s/orig.tet").c_str(), model);
 
 #ifndef VTK_FORMAT
     if ( jtf::mesh::tet_mesh_read_from_zjumat(in_addr, &tet_nodes, &tet_mesh) )
@@ -64,27 +64,14 @@ int main(int argc, char *arg[])
             cout << region_dis[it->first][i].second << " ";
             cout << handle.prime_[sub[i]].dis << endl;
         }
-        sprintf(out_addr, "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/for_cluster/sub_%d.vtk", cnt++);
+        sprintf(out_addr, string(__POJ_BASE_PATH "result/test_cluster/sub_%d.vtk").c_str(), cnt++);
         std::ofstream os(out_addr);
         point2vtk(os, &tri_nodes[0], tri_nodes.size(2), &sub[0], sub.size());
     }
-    std::ofstream os("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/for_cluster/triangle_mesh.vtk");
+    std::ofstream os(__POJ_BASE_PATH "result/test_cluster/triangle_mesh.vtk");
     tri2vtk(os, &tri_nodes[0], tri_nodes.size(2), &tri_mesh[0], tri_mesh.size(2));
 
     cout << "[INFO]DONE!" << endl;
     return 0;
 }
-
-//int main()
-//{
-//    string temp("123.23123.");
-//    std::vector<string> str;
-//    boost::algorithm::split(str, temp, boost::is_any_of("."), boost::token_compress_on);
-
-//    cout << str.size();
-////    for (size_t i = 0; i < str.size(); ++i)
-////        cout << str[i] << " ";
-
-//    return 0;
-//}
 

@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 {
     matrix<size_t> shell_mesh;
     matrix<double> shell_nodes;
-    string inputPath = "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/obj/cylinder/shell_mesh_000.obj";
+    string inputPath = __POJ_BASE_PATH "dat/obj/cylinder/shell_mesh_000.obj";
     jtf::mesh::load_obj(inputPath.c_str(), shell_mesh, shell_nodes);
 
 //    string inputPath = "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/obj/test/sprial.obj";
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 
     while ( frame-- ) {
         cout << "\n\nthis is the " << curr << " frame.\n";
-        sprintf(emd_shell_path, "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/obj/cylinder/embd_mesh_%03d.obj", curr);
+        sprintf(emd_shell_path, __POJ_BASE_PATH "dat/obj/cylinder/embd_mesh_%03d.obj", curr);
         jtf::mesh::load_obj(emd_shell_path, emd_mesh, emd_nodes);
         cout << "[INFO] load embedded mesh succeed.\n";
 
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
                 shell_nodes(colon(), _model[i]->s2g_[j]) = _model[i]->nodes_(colon(), j);
 
         stringstream ss;
-        ss << "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/result/cylinder_1threads_" << curr << ".vtk";
+        ss << __POJ_BASE_PATH "result/test_multi_threads/cylinder_1threads_" << curr << ".vtk";
         ++curr;
         ofstream os(ss.str());
         tri2vtk(os, &shell_nodes[0], shell_nodes.size(2), &shell_mesh[0], shell_mesh.size(2));

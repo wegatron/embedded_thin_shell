@@ -19,7 +19,7 @@ if( WIN32 )
    # Find cholmod part of the suitesparse library collection
 
    FIND_PATH( CHOLMOD_INCLUDE_DIR cholmod.h
-              PATHS "C:\\libs\\win32\\SuiteSparse\\Include"  )
+              PATHS "C:/MinGW/MinGW32/msys/1.0/home/wegatron/usr/include/suitesparse"  )
 
    # Add cholmod include directory to collection include directories
    IF ( CHOLMOD_INCLUDE_DIR )
@@ -30,7 +30,7 @@ if( WIN32 )
    # find path suitesparse library
    FIND_PATH( SUITESPARSE_LIBRARY_DIRS 
 	         amd.lib
-               PATHS "C:\\libs\\win32\\SuiteSparse\\libs" )
+               PATHS "C:/MinGW/MinGW32/msys/1.0/home/wegatron/workspace/geo_sim_sdk/packages/suitesparse/Windows/64/lib" )
 
    # if we found the library, add it to the defined libraries
    IF ( SUITESPARSE_LIBRARY_DIRS )

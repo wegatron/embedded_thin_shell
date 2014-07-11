@@ -63,9 +63,9 @@ namespace UTILITY{
 	return elapsedTime;
   }
 
-#endif
-
-#ifdef WIN32
+// #endif
+#else
+// #ifdef WIN32
 
   /**************** WINDOWS COUNTER *******************/
 
@@ -153,5 +153,6 @@ private:
 #else
 #define FUNC_TIMER()
 #endif
+
 
 #endif /*_TIMER_H_*/

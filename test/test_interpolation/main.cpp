@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     matrix<size_t> tet_mesh, shell_mesh;
     matrix<double> tet_nodes, shell_nodes, shell_normal, xq;
 
-    jtf::mesh::tet_mesh_read_from_vtk("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/orig.vtk", &tet_nodes, &tet_mesh);
+    jtf::mesh::tet_mesh_read_from_vtk(__POJ_BASE_PATH "dat/orig.vtk", &tet_nodes, &tet_mesh);
 
     gen_outside_shell(tet_mesh, tet_nodes, shell_mesh, shell_nodes, shell_normal, 1, 0.003);
 
@@ -31,15 +31,15 @@ int main(int argc, char *argv[])
     xq = tet_nodes * B_;
 
     {
-        std::ofstream os("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/result/orig.vtk");
+        std::ofstream os(__POJ_BASE_PATH "result/test_interpolation/orig.vtk");
         tet2vtk(os, &tet_nodes[0], tet_nodes.size(2), &tet_mesh[0], tet_mesh.size(2));
     }
     {
-        std::ofstream os("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/result/sub.vtk");
+        std::ofstream os(__POJ_BASE_PATH "result/test_interpolation/sub.vtk");
         tri2vtk(os, &shell_nodes[0], shell_nodes.size(2), &shell_mesh[0], shell_mesh.size(2));
     }
     {
-        std::ofstream os("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/result/embed.vtk");
+        std::ofstream os(__POJ_BASE_PATH "result/test_interpolation/embed.vtk");
         tri2vtk(os, &xq[0], xq.size(2), &shell_mesh[0], shell_mesh.size(2));
     }
 

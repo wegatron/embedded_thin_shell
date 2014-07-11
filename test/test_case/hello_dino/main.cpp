@@ -8,7 +8,7 @@ using namespace SIMULATOR;
 int main(int argc, char *argv[]){
 
   // open init json file
-  const string ini_file = "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/dino/simu_full.ini";
+  const string ini_file = __POJ_BASE_PATH "dat/dino/simu_full.ini";
   JsonFilePaser jsonf;
   bool succ = jsonf.open(ini_file);
   assert(succ);
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]){
 
   { // load and set fixed nodes
 	vector<int> nodes;
-    succ = UTILITY::loadVec("/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/dino/model/con_nodes.bou", nodes,UTILITY::TEXT);
+        succ = UTILITY::loadVec(__POJ_BASE_PATH "dat/dino/model/con_nodes.bou", nodes,UTILITY::TEXT);
 	assert(succ);
 	cout << "num of fixed nodes: " << nodes.size() << endl;
 	simulator->setConNodes(nodes);
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]){
   timer.stop("total simulation time for 200 steps is (seconds): ");
 
   { // save as vtk files.
-    succ = tet_mesh->writeVTK("/home/wegatron/tempt", record_u);
+    succ = tet_mesh->writeVTK(__POJ_BASE_PATH "result/hello_dino/hello_dino", record_u);
 	assert(succ);
   }
 

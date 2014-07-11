@@ -14,6 +14,25 @@ ADD_EXECUTABLE(${APP_NAME}
   ${deformer_src}
   )
 
+if(WIN32)
+TARGET_LINK_LIBRARIES(${APP_NAME}
+  # ${CMAKE_SOURCE_DIR}/lib/release/libsolid_elastic.a
+  ${LIBRARY_OUTPUT_PATH}/libsolid_elastic.a
+  ${Boost_LIBRARIES}
+  ${ARPACK_LIBRARIES}
+  ${SUITESPARSE_LIBRARIES}
+  ${SUPERLU2.0_LIBRARIES}
+  lapack
+jtf-mesh
+zjucad-tri_sub
+hj_ANN_c
+ann-parallel-static
+# hj-util-static
+jtf-optimizer
+zjucad-ptree
+shell
+)
+else(WIN32)
 TARGET_LINK_LIBRARIES(${APP_NAME}
 mpi
 petsc
@@ -26,11 +45,11 @@ petscdm
   ${ARPACK_LIBRARIES}
   ${SUITESPARSE_LIBRARIES}
   ${SUPERLU2.0_LIBRARIES}
-  ${Lapack_LIBRARIES}
+  lapack
 jtf-mesh
 zjucad-tri_sub
 hj_ANN_c
-hj-util-static
+# hj-util-static
 jtf-optimizer
 zjucad-optimizer
 zjucad-ptree
@@ -38,3 +57,4 @@ shell
 /usr/lib/liblapack.so.3gf
 metis
 )
+endif(WIN32)

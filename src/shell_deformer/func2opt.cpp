@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <zjucad/matrix/matrix.h>
-#include <hjlib/util/hrclock.h>
+// #include <hjlib/util/hrclock.h>
 
 
 #include "func2opt.h"
@@ -33,10 +33,10 @@ int func2opt::val(const double *x, double &v)
 
 int func2opt::gra(const double *x, double *g)
 {
-    static hj::util::high_resolution_clock hrc;
-    double beg = hrc.ms();
+    // static hj::util::high_resolution_clock hrc;
+    // double beg = hrc.ms();
   f_->eval(1, x, coo2val(*cp_[1], g));
-    cout << "\ngra: " << hrc.ms()-beg << endl;
+    // cout << "\ngra: " << hrc.ms()-beg << endl;
 }
 
 int func2opt::hes(const double *x, size_t &nnz, size_t &format, double *h,
@@ -57,10 +57,10 @@ int func2opt::hes(const double *x, size_t &nnz, size_t &format, double *h,
     return 0;
   }
   if(h != 0 && ptr != 0 && idx != 0) {// accumulate
-    static hj::util::high_resolution_clock hrc;
-    double beg = hrc.ms();
+    // static hj::util::high_resolution_clock hrc;
+    // double beg = hrc.ms();
     f_->eval(2, x, coo2val(*cp_[2], h));
-    cout << "\nhes: " << hrc.ms()-beg << endl;
+    // cout << "\nhes: " << hrc.ms()-beg << endl;
     return 0;
   }
 }

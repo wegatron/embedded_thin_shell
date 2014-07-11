@@ -9,7 +9,11 @@ link_directories($ENV{HOME}/usr/lib)
 add_library_from_dir(shell_deformer SHARED ./)
 target_link_libraries(shell_deformer
 jtf-optimizer
-optimized hj-util-static debug hj-util-staticd
+jtf-mesh
+optimized
+zjucad-ptree
+#hj-util-static debug hj-util-staticd
 hj-function
 shell
+gomp
 )

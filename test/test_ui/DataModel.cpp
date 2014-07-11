@@ -1,7 +1,6 @@
 #include "DataModel.h"
 #include <hjlib/util/hrclock.h>
 
-#include <SubspaceSimulator.h>
 #include <FullStVKSimulator.h>
 #include <MatrixIO.h>
 #include <jtflib/mesh/util.h>
@@ -21,22 +20,22 @@ DataModel::DataModel(pTetMeshEmbeding embeding):_volObj(embeding){
 
 pSimulator DataModel::createSimulator(const string filename)const{
 
-    string simulator_name = "full_stvk";
-    JsonFilePaser jsonf;
-    if (jsonf.open(filename)){
-        jsonf.read("simulator", simulator_name, string("full_stvk"));
-    }
+    // string simulator_name = "full_stvk";
+    // JsonFilePaser jsonf;
+    // if (jsonf.open(filename)){
+    //     jsonf.read("simulator", simulator_name, string("full_stvk"));
+    // }
 
     pSimulator sim;
-    if ("subspace" == simulator_name){
-        pReducedElasticModel elas_m = pReducedElasticModel(new DirectReductionElasticModel());
-        sim = pSimulator(new SubspaceSimulator(elas_m,string("subspace")));
-    }else if ("cubature" == simulator_name){
-        pReducedElasticModel elas_m = pReducedElasticModel(new CubaturedElasticModel());
-        sim = pSimulator(new SubspaceSimulator(elas_m,string("cubature")));
-    }else{
+    // if ("subspace" == simulator_name){
+    //     pReducedElasticModel elas_m = pReducedElasticModel(new DirectReductionElasticModel());
+    //     sim = pSimulator(new SubspaceSimulator(elas_m,string("subspace")));
+    // }else if ("cubature" == simulator_name){
+    //     pReducedElasticModel elas_m = pReducedElasticModel(new CubaturedElasticModel());
+    //     sim = pSimulator(new SubspaceSimulator(elas_m,string("cubature")));
+    // }else{
         sim = pSimulator(new FullStVKSimulator());
-    }
+    // }
 
     return sim;
 }

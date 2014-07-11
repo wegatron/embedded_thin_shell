@@ -10,6 +10,10 @@
 #include <iostream>
 #include <assert.h>
 
+#ifndef __STRING
+#define __STRING(x) #x
+#endif
+
 #if defined(WIN32) || defined(NDEBUG)/* Not NDEBUG.  */
 
 # define assert_eq(value_a,value_b)		

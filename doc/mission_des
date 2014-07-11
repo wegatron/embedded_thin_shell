@@ -1,0 +1,57 @@
+MY PROJECT -*- mode: org -*-
+
+#+AUTHOR: Shengwei ZHANG
+#+EMAIL: wegatron@gmail.com
+#+DATE: [2014-07-06 Sun]
+#+TITLE: 实习任务
+* Abstract
+写一个Maya插件，用户可以通过maya创建一个的场景（如墙，球，垫子等）设置初始速度，重力等，然后调用我们的程序根据这个场景进行模拟
+，完了之后将产生的结果导入Maya进行渲染.
+
+* Work Detail
+** Stage one
+可以分为如下两步:
+
+*** 写一个GUI调用我们的可执行程序
+**** Description
+首先要写一个GUI让用户输入我们的程序所需要的配置, 然后组建一条可执行命令去执行我们的程序.
+我们的程序的用法是 *[exectuable_name] [ini_file]*
+所以GUI所需要做的是
+1.去brows这个配置文件，然后读取显示给用户。用户可以通过GUI修改这些配置，另存等。
+2.去组建这个命令(*[exectuable_name] [ini_file]*),并执行.
+
+**** Configuration file
+ini配置文件基本如下（以后会根据具体的需求更改）
+{
+
+"init_file_dir": "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/for_test_drop/hit_ball/",
+"simulator"    : "full_stvk",
+
+"h"            : 0.0004,
+"alpha_k"      : 0.0015,
+"alpha_m"      : 0.0015,
+
+"steps"        : 2000,
+"output_steps" : 10,
+"plane_index"  : 0,
+"plane_height" : -1.32,
+"front_collision"  : true,
+"kd"           : 0.8,
+
+"vol_file"       : "model/mesh.abq",
+"elastic_mtl"    : "model/mesh.elastic",
+"output_file"    : "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/for_test_drop/hit_ball/result/hit_ball"
+}
+
+*** 将产生的结果导入Maya进行渲染
+我们的程序将会产生一序列obj文件(如ret000.obj, ret001.obj ...)，
+等待程序执行完成之后，将此序列导入Maya之中渲染。
+
+** Stage two
+将maya中配置好的场景的相关数据导出（模型数据），并构造对应的ini文件.
+
+** Stage three
+修改我们的程序，使得导出的不是obj序列而是VRML2格式的数据.
+
+* Reference
+http://download.autodesk.com/global/docs/mayasdk2012/en_us/index.html

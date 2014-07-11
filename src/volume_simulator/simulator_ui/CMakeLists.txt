@@ -35,13 +35,37 @@ ADD_EXECUTABLE(${APPNAME}
   ${UI_FORMS_HEADERS}
 )
 
-
+if(WIN32)
 
 TARGET_LINK_LIBRARIES(${APPNAME}
+  
+  # ${LIBRARY_OUTPUT_PATH}/release/libsolid_elastic.a
+  # ${LIBRARY_OUTPUT_PATH}/release/libutility_ui.a
+  ${LIBRARY_OUTPUT_PATH}/libsolid_elastic.a
+  ${LIBRARY_OUTPUT_PATH}/libutility_ui.a
+  ${QGLViewer_LIBRARIES}
+  #${QT_DLL_LIBRARIES}
+  # C:/Qt4.8.5/bin/QtOpenGL4.dll
+  # C:/Qt4.8.5/bin/QtGui4.dll
+  # C:/Qt4.8.5/bin/QtXml4.dll
+  # C:/Qt4.8.5/bin/QtCore4.dll
+  ${QT_LIBRARIES}
+  #C:/MinGW/MinGW32/msys/1.0/home/wegatron/3rdlibs/qt-everywhere-opensource-src-4.8.5/lib/libQtCore4.a
+  
+  ${GLEW_LIBRARY}
+  ${OPENGL_LIBRARIES}
+  ${Boost_LIBRARIES}
 
+  ${ARPACK_LIBRARIES}
+  ${SUITESPARSE_LIBRARIES}
+  ${SUPERLU2.0_LIBRARIES}
+  lapack
+)
+else(WIN32)
+TARGET_LINK_LIBRARIES(${APPNAME}
+  
   solid_elastic
   utility_ui
-
   ${QGLViewer_LIBRARIES}
   ${QT_LIBRARIES}
   ${GLEW_LIBRARY}
@@ -51,5 +75,6 @@ TARGET_LINK_LIBRARIES(${APPNAME}
   ${ARPACK_LIBRARIES}
   ${SUITESPARSE_LIBRARIES}
   ${SUPERLU2.0_LIBRARIES}
-  ${LAPACK_LIBRARIES}
+  lapack
 )
+endif(WIN32)

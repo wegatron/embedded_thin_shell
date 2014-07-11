@@ -26,7 +26,7 @@ int main()
 
     matrix<size_t> shell_mesh;
     matrix<double> shell_nodes;
-    string ref_shell_path = "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/obj/cylinder/shell_mesh_000.obj";
+    string ref_shell_path = __POJ_BASE_PATH "dat/obj/cylinder/shell_mesh_000.obj";
     jtf::mesh::load_obj(ref_shell_path.c_str(), shell_mesh, shell_nodes);
 
     vector<vector<pair<size_t, double>>> w_mat;
@@ -78,7 +78,7 @@ int main()
 
     while ( frame-- ) {
         cout << "this is the " << curr << " frame.\n";
-        sprintf(emd_shell_path, "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/dat/obj/cylinder/embd_mesh_%03d.obj", curr);
+        sprintf(emd_shell_path, __POJ_BASE_PATH "dat/obj/cylinder/embd_mesh_%03d.obj", curr);
         jtf::mesh::load_obj(emd_shell_path, emd_mesh, emd_nodes);
         cout << "[INFO] load embedded mesh succeed.\n";
 
@@ -103,7 +103,7 @@ int main()
         }
 
         ostringstream oss;
-        oss << "/home/wegatron/workspace/embedded_thin_shell/branches/chenjiong/result/cylinder_2threads_" << curr << ".vtk";
+        oss << __POJ_BASE_PATH << "result/test_node_cpu/cylinder_2threads_" << curr << ".vtk";
         ++curr;
         ofstream os(oss.str());
         tri2vtk(os, &shell_nodes[0], shell_nodes.size(2), &shell_mesh[0], shell_mesh.size(2));

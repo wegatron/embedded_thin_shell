@@ -1,9 +1,7 @@
 #ifndef _SIMULATOR_H_
 #define _SIMULATOR_H_
 
-#include <boost/shared_ptr.hpp>
-#include <set>
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <TetMesh.h>
 
 using namespace std;

@@ -65,7 +65,34 @@ ADD_EXECUTABLE(${APPNAME}
   ${interpolate_source}
   ${shell_deformer_source}
 )
+if(WIN32)
+message(!!!!!!!!!!!!!Qt libraries is ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(${APPNAME}
 
+  # ${CMAKE_SOURCE_DIR}/lib/release/libsolid_elastic.a
+  ${LIBRARY_OUTPUT_PATH}/libsolid_elastic.a
+  # ${CMAKE_SOURCE_DIR}/lib/release/libutility_ui.a
+  ${LIBRARY_OUTPUT_PATH}/libutility_ui.a
+  ${QGLViewer_LIBRARIES}
+  ${QT_LIBRARIES}
+  ${GLEW_LIBRARY}
+  ${OPENGL_LIBRARIES}
+  ${Boost_LIBRARIES}
+
+  ${ARPACK_LIBRARIES}
+  ${SUITESPARSE_LIBRARIES}
+  ${SUPERLU2.0_LIBRARIES}
+  lapack
+jtf-mesh
+zjucad-tri_sub
+hj_ANN_c
+ann-parallel-static
+#hj-util-static
+jtf-optimizer
+zjucad-ptree
+shell
+)
+else(WIN32)
 TARGET_LINK_LIBRARIES(${APPNAME}
 mpi
 petsc
@@ -85,14 +112,15 @@ petscdm
   ${ARPACK_LIBRARIES}
   ${SUITESPARSE_LIBRARIES}
   ${SUPERLU2.0_LIBRARIES}
-  ${LAPACK_LIBRARIES}
+  lapack
 jtf-mesh
 zjucad-tri_sub
 hj_ANN_c
-hj-util-static
+#hj-util-static
 jtf-optimizer
 zjucad-optimizer
 zjucad-ptree
 shell
 glut
 )
+endif(WIN32)

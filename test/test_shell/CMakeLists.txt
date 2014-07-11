@@ -17,7 +17,7 @@ petscvec
 petscksp
 petscdm
 jtf-mesh
-hj-util-static
+#hj-util-static
 jtf-optimizer
 zjucad-optimizer
 zjucad-ptree

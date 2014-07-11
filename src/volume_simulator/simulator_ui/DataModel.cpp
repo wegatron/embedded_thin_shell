@@ -1,5 +1,5 @@
 #include "DataModel.h"
-#include <SubspaceSimulator.h>
+// #include <SubspaceSimulator.h>
 #include <FullStVKSimulator.h>
 #include <MatrixIO.h>
 using namespace SIMULATOR;
@@ -19,15 +19,15 @@ pSimulator DataModel::createSimulator(const string filename)const{
   }
 
   pSimulator sim;
-  if ("subspace" == simulator_name){
+/*   if ("subspace" == simulator_name){
 	pReducedElasticModel elas_m = pReducedElasticModel(new DirectReductionElasticModel());
 	sim = pSimulator(new SubspaceSimulator(elas_m,string("subspace")));
   }else if ("cubature" == simulator_name){
 	pReducedElasticModel elas_m = pReducedElasticModel(new CubaturedElasticModel());
 	sim = pSimulator(new SubspaceSimulator(elas_m,string("cubature")));
-  }else{
+  }else{ */
 	sim = pSimulator(new FullStVKSimulator());
-  }
+/*   } */
 
   return sim;
 }
