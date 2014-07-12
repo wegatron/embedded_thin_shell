@@ -115,6 +115,7 @@ include_directories(${CMAKE_BINARY_DIR})
 set(CMAKE_CXX_FLAGS "-fopenmp -fpermissive -std=c++0x ${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(src)
-add_subdirectory(test)
+#add_subdirectory(test)
 add_subdirectory(common)
 
+add_subdirectory(demo)
