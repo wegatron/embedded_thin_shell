@@ -1,5 +1,5 @@
-#ifndef _COLIDE_RIGID_DATA_H_
-#define _COLIDE_RIGID_DATA_H_
+#ifndef _COLLIDE_RIGID_DATA_H_
+#define _COLLIDE_RIGID_DATA_H_
 
 #include <vector>
 #include <Eigen/Dense>
@@ -21,7 +21,7 @@ namespace COLIDE_RIGID {
 
   class RigidBall {
   public:
-    void Collide (const UTILITY::VVec3d &nodes,  const double k, const Eigen::VectorXd &u, Eigen::VectorXd &extforce);
+    void Collide (const UTILITY::VVec3d &nodes,  const double k, const Eigen::VectorXd &u, Eigen::VectorXd &extforce) const;
     int ExportObj (const string &filename) const;
     void transform (const Vector3d &dis);
     Vector3d CalGravity (const double g);
@@ -37,8 +37,6 @@ namespace COLIDE_RIGID {
   class SenceData {
   public:
     int InitDataFromFile (const char *ini_file);
-    int LoadData (const char *ini_file);
-    int CalTetMeshGravity ();
 
     int steps_;
     int output_steps_;
@@ -47,6 +45,7 @@ namespace COLIDE_RIGID {
     double k_; // stiffness k for collision force
     double g_; // gravity value
     Eigen::Vector3d g_normal_; // gravity normal
+    string ini_file_; // init file path
     string out_ball_prefix_;
     string out_tet_mesh_prefix_;
     string out_shell_mesh_prefix_;
@@ -56,6 +55,9 @@ namespace COLIDE_RIGID {
 
     RigidBall rigid_ball_;
     std::vector<pPlane> plans_;
+  private:
+    int LoadData (const char *ini_file);
+    int CalTetMeshGravity ();
   };
   typedef boost::shared_ptr<SenceData> pSenceData;
 }

@@ -1,6 +1,7 @@
 #ifndef _SINGLE_POINT_SIMULATOR_H_
 #define _SINGLE_POINT_SIMULATOR_H_
 
+#include <boost/shared_ptr.hpp>
 #include <Eigen/Dense>
 
 namespace COLIDE_RIGID {
