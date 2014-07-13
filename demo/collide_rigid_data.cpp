@@ -16,7 +16,8 @@ void Plane::Collide (const UTILITY::VVec3d &nodes, const double kd, Eigen::Vecto
     if (depth > 0) { // collision
       u.segment<3>(i*3) += depth * normal_;
       double change_v = (-kd-1)*normal_.dot(v.segment<3>(i*3));
-      v.segment<3>(i*3) = v.segment<3>(i*3) - change_v*normal_;
+      assert(change_v > 0);
+      v.segment<3>(i*3) = v.segment<3>(i*3) + change_v*normal_;
     }
   }
 }
@@ -55,35 +56,42 @@ int SenceData::LoadData (const char *ini_file) {
   bool succ = jsonf.open(ini_file);
   assert(succ);
 
-  succ &= jsonf.read("steps", steps_);
-  succ &= jsonf.read("h", time_step_);
-  succ &= jsonf.read("graverty_acceration", g_);
-  {// output setting
+  {
+    succ &= jsonf.read("steps", steps_);
+    succ &= jsonf.read("h", time_step_);
+    succ &= jsonf.read("graverty_acceration", g_);
+
+    // output setting
     succ &= jsonf.read("output_steps", output_steps_);
     succ &= jsonf.read("output_ball_prefix", out_ball_prefix_);
     succ &= jsonf.read("output_tet_prefix", out_tet_mesh_prefix_);
     succ &= jsonf.read("output_shell_prefix", out_shell_mesh_prefix_);
   }
+  succ &= jsonf.read("kd", kd_);
   assert(succ);
+  g_normal_ = Vector3d(0,0,-1); // default gravity normal
 
-  string vol_file;
-  string mtl_file;
+
   { // tet_mesh
+    string vol_file;
+    string mtl_file;
     succ &= jsonf.readFilePath("vol_file", vol_file);
     succ &= jsonf.readFilePath("elastic_mtl",mtl_file);
+    assert(succ);
+    tet_mesh_ = UTILITY::pTetMesh(new UTILITY::TetMesh());
+    tet_mesh_->load(vol_file);
+    tet_mesh_->loadElasticMtl(mtl_file);
   }
-  assert(succ);
-  tet_mesh_ = UTILITY::pTetMesh(new UTILITY::TetMesh());
-  tet_mesh_->load(vol_file);
-  tet_mesh_->loadElasticMtl(mtl_file);
 
-  // load planes
-  string plane_file;
-  jsonf.readFilePath("plane_file", plane_file);
-  int ret = LoadPlanes(plane_file);
-  assert(ret == 0);
-  // @TODO load other data
-  g_normal_ = Vector3d(0,0,-1); // default gravity normal
+  int ret=0;
+  {// load planes
+    string plane_file;
+    jsonf.readFilePath("plane_file", plane_file);
+    ret = LoadPlanes(plane_file);
+    assert(ret == 0);
+  }
+  // @TODO load rigid ball
+
   if (succ) { return ret; }
   else {
     ZSW_DEBUG("load setting succ not true");
@@ -104,7 +112,7 @@ int SenceData::LoadPlanes (const string &file) {
     Vector3d &tmp_normal = plane_ptr->GetNormal();
     ifs >> tmp_point[0] >> tmp_point[1] >> tmp_point[2];
     ifs >> tmp_normal[0] >> tmp_normal[1] >> tmp_normal[2];
-    plans_.push_back(plane_ptr);
+    planes_.push_back(plane_ptr);
   }
   return 0;
 }

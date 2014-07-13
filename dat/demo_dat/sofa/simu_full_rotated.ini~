@@ -2,16 +2,19 @@
 
 "init_file_dir": "/home/wegatron/workspace/embedded_thin_shell/branches/zhangshengwei/dat/demo_dat/sofa/",
 
-"h"            : 0.004,
-"alpha_k"      : 0.001,
-"alpha_m"      : 0.001,
-"graverty_acceration" : 25.5,
+"h"            : 0.0004,
+"alpha_k"      : 0.000,
+"alpha_m"      : 0.000,
+"graverty_acceration" : 20,
 
-"steps"	       : 200,
+"kd"		: 0.0,
+
+"steps"	       : 2000,
 "output_steps" : 2,
 
 "vol_file"       : "model/rotate75_fine1.abq",
 "elastic_mtl"    : "model/mesh_rotate_fine1.elastic",
+"plane_file"	 : "planes",
 "output_ball_prefix"	 : "/home/wegatron/workspace/embedded_thin_shell/branches/zhangshengwei/result/demo/ball",
 "output_shell_prefix"	 : "/home/wegatron/workspace/embedded_thin_shell/branches/zhangshengwei/result/demo/shell",
 "output_tet_prefix"	 : "/home/wegatron/workspace/embedded_thin_shell/branches/zhangshengwei/result/demo/vol"

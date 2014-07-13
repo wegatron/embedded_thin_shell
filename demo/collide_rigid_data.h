@@ -56,7 +56,7 @@ namespace COLIDE_RIGID {
     UTILITY::pTetMesh tet_mesh_;
 
     RigidBall rigid_ball_;
-    std::vector<pPlane> plans_;
+    std::vector<pPlane> planes_;
   private:
     int LoadData (const char *ini_file);
     int LoadPlanes (const string &file);

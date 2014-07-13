@@ -50,10 +50,9 @@ int Excute(const char *inifile) {
     // ssim->forward();
     // // @TODO transform rigid ball according single point simulator
     sim->forward();
-    cout << "[zsw_info]: step" << i << endl;
-    // for (int j=0; sdata.plans_.size(); ++j) {
-    //   sdata.plans_[i]->Collide(sdata.tet_mesh_->nodes(), sdata.kd_, sim->getModifyFullDisp(), sim->getV());
-    // }
+    for (int j=0; j<sdata.planes_.size(); ++j) {
+      sdata.planes_[j]->Collide(sdata.tet_mesh_->nodes(), sdata.kd_, sim->getModifyFullDisp(), sim->getV());
+    }
     // VectorXd extforce;
     // sdata.rigid_ball_.Collide(sdata.tet_mesh_->nodes(), sdata.k_, sim->getFullDisp(), extforce);
     // // solid simulator set extforce
@@ -65,6 +64,7 @@ int Excute(const char *inifile) {
     // shell_sim->forward(sim->getFullDisp());
     // output
     if (i%sdata.output_steps_ == 0) {
+      cout << "[zsw_info]: step" << i << endl;
       static int out_steps = 0;
       // sdata.rigid_ball_.ExportObj(CalFileName(sdata.out_ball_prefix_, out_steps, 4));
       // ExportObj(CalFileName(sdata.out_ball_prefix_, out_steps, 4), shell_sim->GetCell(), shell_sim->GetNodes(), shell_sim->GetNormal(), true);
