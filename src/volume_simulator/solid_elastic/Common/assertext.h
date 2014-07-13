@@ -10,9 +10,12 @@
 #include <iostream>
 #include <assert.h>
 
-#ifndef __STRING
-#define __STRING(x) #x
-#endif
+#define assert_ext(cond, info)											\
+  if (!cond)															\
+	{																	\
+	  std::cout << "additional info: "<< info << std::endl;				\
+	  assert(cond);														\
+	}																	\
 
 #if defined(WIN32) || defined(NDEBUG)/* Not NDEBUG.  */
 
@@ -24,7 +27,7 @@
 # define assert_lt(value_a,value_b)		
 # define assert_in(value_a,min,max)
 
-# define assert_eq_ext(value_a,value_b,info)		
+# define assert_eq_ext(value_a,value_b,info)
 # define assert_ne_ext(value_a,value_b,info)		
 # define assert_ge_ext(value_a,value_b,info)		
 # define assert_gt_ext(value_a,value_b,info)		
@@ -46,9 +49,18 @@
 	  std::cout << __STRING(value_a) <<" = " << value_a<< std::endl;	\
 	  std::cout << __STRING(value_b) <<" = " << value_b<< std::endl;	\
 	  new_assert(value_a == value_b);									\
-	}																	\
-  
-#define assert_eq_ext(value_a, value_b, info)							\
+	}
+
+#define assert_eq_eps(value_a, value_b, eps)                                \
+  if (value_a-value_b>eps || value_b-value_a>eps)												\
+	{																	\
+	  std::cout << __STRING(value_a) <<" = " << value_a<< std::endl;	\
+	  std::cout << __STRING(value_b) <<" = " << value_b<< std::endl;	\
+          std::cout << __STRING(eps) <<" = " << eps<< std::endl; \
+	  new_assert(value_a == value_b);									\
+	}
+
+#define assert_eq_ext(value_a, value_b, info)                           \
   if (value_a != value_b)												\
 	{																	\
 	  std::cout << __STRING(value_a) <<" = " << value_a<< std::endl;	\

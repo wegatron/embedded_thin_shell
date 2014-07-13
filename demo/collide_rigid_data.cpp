@@ -2,7 +2,9 @@
 
 #include <Eigen/Sparse>
 #include <JsonFilePaser.h>
+#include <assertext.h>
 #include <MassMatrix.h>
+
 
 using namespace COLIDE_RIGID;
 using namespace Eigen;
@@ -61,8 +63,8 @@ int SenceData::LoadData (const char *ini_file) {
   string vol_file;
   string mtl_file;
   { // tet_mesh
-    succ &= jsonf.read("tet_mesh", vol_file);
-    succ &= jsonf.read("mtl",mtl_file);
+    succ &= jsonf.readFilePath("vol_file", vol_file);
+    succ &= jsonf.readFilePath("elastic_mtl",mtl_file);
   }
   assert(succ);
   tet_mesh_ = UTILITY::pTetMesh(new UTILITY::TetMesh());
@@ -70,7 +72,7 @@ int SenceData::LoadData (const char *ini_file) {
   tet_mesh_->loadElasticMtl(mtl_file);
 
   // @TODO load other data
-  g_normal_ = Vector3d(0,0,1); // default gravity normal
+  g_normal_ = Vector3d(0,0,-1); // default gravity normal
   return 0;
 }
 
@@ -78,9 +80,21 @@ int SenceData::CalTetMeshGravity () {
   UTILITY::MassMatrix mass;
   DiagonalMatrix<double, -1> M;
   mass.compute(M, *tet_mesh_);
-  assert(M.size() == tet_mesh_->nodes().size()*3);
-  tet_mesh_gravity_.resize(M.size());
-  tet_mesh_gravity_.setOnes();
-  tet_mesh_gravity_= g_*tet_mesh_gravity_*M;
+
+  assert_eq(M.diagonal().size(), tet_mesh_->nodes().size()*3);
+
+  tet_mesh_gravity_.resize(3, tet_mesh_->nodes().size());
+  tet_mesh_gravity_.row(0).setConstant(g_normal_[0]);
+  tet_mesh_gravity_.row(1).setConstant(g_normal_[1]);
+  tet_mesh_gravity_.row(2).setConstant(g_normal_[2]);
+
+  tet_mesh_gravity_.resize(M.diagonal().size(), 1);
+
+  assert_eq_eps(tet_mesh_gravity_(0,0), g_normal_[0], 1e-3);
+  assert_eq_eps(tet_mesh_gravity_(1,0), g_normal_[1], 1e-3);
+  assert_eq_eps(tet_mesh_gravity_(2,0), g_normal_[2], 1e-3);
+
+  tet_mesh_gravity_= g_*M*tet_mesh_gravity_;
+
   return 0;
 }

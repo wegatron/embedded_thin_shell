@@ -50,6 +50,7 @@ int Excute(const char *inifile) {
     // ssim->forward();
     // // @TODO transform rigid ball according single point simulator
     sim->forward();
+    cout << "[zsw_info]: step" << i << endl;
     // for (int j=0; sdata.plans_.size(); ++j) {
     //   sdata.plans_[i]->Collide(sdata.tet_mesh_->nodes(), sdata.kd_, sim->getModifyFullDisp(), sim->getV());
     // }
@@ -73,7 +74,7 @@ int Excute(const char *inifile) {
     }
   }
   { // save as vtk files.
-    bool succ = sdata.tet_mesh_->writeVTK(__POJ_BASE_PATH "result/demo/demo", record_u);
+    bool succ = sdata.tet_mesh_->writeVTK(sdata.out_tet_mesh_prefix_, record_u);
     assert(succ);
   }
 

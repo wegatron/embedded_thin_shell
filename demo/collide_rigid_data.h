@@ -50,7 +50,7 @@ namespace COLIDE_RIGID {
     string out_tet_mesh_prefix_;
     string out_shell_mesh_prefix_;
 
-    Eigen::VectorXd tet_mesh_gravity_;
+    Eigen::MatrixXd tet_mesh_gravity_;
     UTILITY::pTetMesh tet_mesh_;
 
     RigidBall rigid_ball_;
