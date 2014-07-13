@@ -5,6 +5,7 @@
 #include <assertext.h>
 #include <MassMatrix.h>
 
+#include "zsw_debug.h"
 
 using namespace COLIDE_RIGID;
 using namespace Eigen;
@@ -41,8 +42,11 @@ Vector3d RigidBall::CalGravity (const double g) {
 }
 
 int SenceData::InitDataFromFile (const char *ini_file) {
-  LoadData(ini_file);
-  CalTetMeshGravity();
+  int ret = LoadData(ini_file);
+  if (ret == 0) {
+    ret = CalTetMeshGravity();
+  }
+  return ret;
 }
 
 int SenceData::LoadData (const char *ini_file) {
@@ -60,6 +64,8 @@ int SenceData::LoadData (const char *ini_file) {
     succ &= jsonf.read("output_tet_prefix", out_tet_mesh_prefix_);
     succ &= jsonf.read("output_shell_prefix", out_shell_mesh_prefix_);
   }
+  assert(succ);
+
   string vol_file;
   string mtl_file;
   { // tet_mesh
@@ -71,8 +77,35 @@ int SenceData::LoadData (const char *ini_file) {
   tet_mesh_->load(vol_file);
   tet_mesh_->loadElasticMtl(mtl_file);
 
+  // load planes
+  string plane_file;
+  jsonf.readFilePath("plane_file", plane_file);
+  int ret = LoadPlanes(plane_file);
+  assert(ret == 0);
   // @TODO load other data
   g_normal_ = Vector3d(0,0,-1); // default gravity normal
+  if (succ) { return ret; }
+  else {
+    ZSW_DEBUG("load setting succ not true");
+    return __LINE__;
+  }
+}
+int SenceData::LoadPlanes (const string &file) {
+  ifstream ifs(file);
+  if (!ifs) {
+    cerr << "cannot open file:" << file << endl;
+    return __LINE__;
+  }
+  int plane_num;
+  ifs >> plane_num;
+  for (int i=0; i<plane_num; ++i) {
+    pPlane plane_ptr = pPlane(new Plane());
+    Vector3d &tmp_point = plane_ptr->GetPoint();
+    Vector3d &tmp_normal = plane_ptr->GetNormal();
+    ifs >> tmp_point[0] >> tmp_point[1] >> tmp_point[2];
+    ifs >> tmp_normal[0] >> tmp_normal[1] >> tmp_normal[2];
+    plans_.push_back(plane_ptr);
+  }
   return 0;
 }
 

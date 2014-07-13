@@ -13,6 +13,8 @@ namespace COLIDE_RIGID {
   class Plane {
   public:
     void Collide (const UTILITY::VVec3d &nodes, const double kd, Eigen::VectorXd &u, Eigen::VectorXd &v);
+    Eigen::Vector3d &GetPoint () { return point_; }
+    Eigen::Vector3d &GetNormal () { return normal_; }
   private:
     Eigen::Vector3d point_;
     Eigen::Vector3d normal_;
@@ -57,6 +59,7 @@ namespace COLIDE_RIGID {
     std::vector<pPlane> plans_;
   private:
     int LoadData (const char *ini_file);
+    int LoadPlanes (const string &file);
     int CalTetMeshGravity ();
   };
   typedef boost::shared_ptr<SenceData> pSenceData;

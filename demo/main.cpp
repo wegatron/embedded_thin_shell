@@ -38,8 +38,8 @@ string CalFileName(const string &prefix, int out_steps, int width) {
 int Excute(const char *inifile) {
   // load data
   SenceData sdata;
-  sdata.InitDataFromFile(inifile);
-
+  int ret = sdata.InitDataFromFile(inifile);
+  if (ret!=0) { return __LINE__; }
   pSimulator sim = pSimulator(new FullStVKSimulator());
   pSinglePointSimulator ssim = pSinglePointSimulator(new SinglePointSimulator());
   pEmbeddedShellSimulator shell_sim = pEmbeddedShellSimulator(new EmbeddedShellSimulator());
