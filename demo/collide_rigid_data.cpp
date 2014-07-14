@@ -60,8 +60,11 @@ int SenceData::LoadData (const char *ini_file) {
   {
     succ &= jsonf.read("steps", steps_);
     succ &= jsonf.read("h", time_step_);
-    succ &= jsonf.read("graverty_acceration", g_);
-
+    vector<double> g_v;
+    succ &= jsonf.read("graverty", g_v);
+    assert(g_v.size()==3);
+    std::copy(g_v.begin(), g_v.end(), &g_normal_[0]);
+    ZSW_INFO("gravity" << g_normal_.transpose());
     // output setting
     succ &= jsonf.read("output_steps", output_steps_);
     succ &= jsonf.read("output_ball_prefix", out_ball_prefix_);
@@ -70,7 +73,6 @@ int SenceData::LoadData (const char *ini_file) {
   }
   succ &= jsonf.read("kd", kd_);
   assert(succ);
-  g_normal_ = Vector3d(0,0,-1); // default gravity normal
 
   { // tet_mesh
     string vol_file;

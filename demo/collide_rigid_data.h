@@ -47,7 +47,6 @@ namespace COLIDE_RIGID {
     double time_step_;
     double kd_; // kd for velocity
     double k_; // stiffness k for collision force
-    double g_; // gravity value
     Eigen::Vector3d g_normal_; // gravity normal
     string ini_file_; // init file path
     string out_ball_prefix_;
