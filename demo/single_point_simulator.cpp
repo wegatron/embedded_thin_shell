@@ -10,5 +10,11 @@ void SinglePointSimulator::forward () {
 }
 
 void SinglePointSimulator::SetExtForce (Eigen::Vector3d &extforce) {
-  extforce_ = extforce;
+  extforce_ = extforce+gravity_;
+}
+
+void SinglePointSimulator::SetGravity (const Vector3d &g_normal)
+{
+  assert(quality_ > 1e-4);
+  gravity_ = quality_ * g_normal;
 }

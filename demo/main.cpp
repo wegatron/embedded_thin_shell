@@ -47,7 +47,8 @@ int Excute(const char *inifile) {
   InitSim(sdata, sim, ssim, shell_sim);
   vector<VectorXd> record_u;
   for (int i=0; i<sdata.steps_; ++i) {
-    // ssim->forward();
+    //ssim->forward();
+    // sdata.rigid_ball_.transform(ssim->getU());
     // // @TODO transform rigid ball according single point simulator
     sim->forward();
     for (int j=0; j<sdata.planes_.size(); ++j) {

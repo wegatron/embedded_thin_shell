@@ -9,9 +9,15 @@ namespace COLIDE_RIGID {
   {
   public:
     void forward ();
+
+    // external force, do not need add gravity
     void SetExtForce (Eigen::Vector3d &extforce);
     void SetTimeStep (double h) { h_=h; }
+    void SetGravity (const Vector3d &g_normal);
+
     void SetQuality (double quality) { quality_=quality; }
+    void SetV (const Vector3d& v) { v=v_; }
+
     const Eigen::Vector3d &getU () const { return u_; }
   private:
     double h_; // time step
@@ -19,6 +25,7 @@ namespace COLIDE_RIGID {
     Eigen::Vector3d u_; // displacement in single time step not accumlate
     Eigen::Vector3d v_;
     Eigen::Vector3d extforce_;
+    Eigen::Vector3d gravity_;
   };
   typedef boost::shared_ptr<SinglePointSimulator> pSinglePointSimulator;
 }
