@@ -1,6 +1,7 @@
 #ifndef _COLLIDE_RIGID_DATA_H_
 #define _COLLIDE_RIGID_DATA_H_
 
+#include <iostream>
 #include <vector>
 #include <Eigen/Dense>
 #include <boost/shared_ptr.hpp>
@@ -13,6 +14,7 @@ namespace COLIDE_RIGID {
   class Plane {
   public:
     void Collide (const UTILITY::VVec3d &nodes, const double kd, Eigen::VectorXd &u, Eigen::VectorXd &v);
+    friend ostream& operator<<(ostream&, Plane&);
     Eigen::Vector3d &GetPoint () { return point_; }
     Eigen::Vector3d &GetNormal () { return normal_; }
   private:
@@ -59,10 +61,11 @@ namespace COLIDE_RIGID {
     std::vector<pPlane> planes_;
   private:
     int LoadData (const char *ini_file);
-    int LoadPlanes (const string &file);
     int CalTetMeshGravity ();
   };
   typedef boost::shared_ptr<SenceData> pSenceData;
+
+  ostream& operator<<(ostream&, Plane&);
 }
 
 #endif /* _COLIDE_RIGID_DATA_H_ */

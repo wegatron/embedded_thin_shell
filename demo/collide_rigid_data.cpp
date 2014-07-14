@@ -10,6 +10,7 @@
 using namespace COLIDE_RIGID;
 using namespace Eigen;
 
+
 void Plane::Collide (const UTILITY::VVec3d &nodes, const double kd, Eigen::VectorXd &u, Eigen::VectorXd &v) {
   for (int i=0; i<nodes.size(); ++i) {
     double depth = normal_.dot(point_ - nodes[i] - u.segment<3>(i*3));
@@ -71,7 +72,6 @@ int SenceData::LoadData (const char *ini_file) {
   assert(succ);
   g_normal_ = Vector3d(0,0,-1); // default gravity normal
 
-
   { // tet_mesh
     string vol_file;
     string mtl_file;
@@ -83,38 +83,22 @@ int SenceData::LoadData (const char *ini_file) {
     tet_mesh_->loadElasticMtl(mtl_file);
   }
 
-  int ret=0;
   {// load planes
-    string plane_file;
-    jsonf.readFilePath("plane_file", plane_file);
-    ret = LoadPlanes(plane_file);
-    assert(ret == 0);
+    vector<double> plane_v;
+    succ &= jsonf.read("planes", plane_v);
+    assert(plane_v.size()%6 == 0);
+    for (vector<double>::iterator it=plane_v.begin(); it!=plane_v.end(); it+=6) {
+      pPlane plane_ptr = pPlane(new Plane());
+      std::copy(it, it+3, &plane_ptr->GetPoint()[0]);
+      std::copy(it+3, it+6, &plane_ptr->GetNormal()[0]);
+      cout << *plane_ptr << endl;
+      planes_.push_back(plane_ptr);
+    }
   }
   // @TODO load rigid ball
-
-  if (succ) { return ret; }
-  else {
-    ZSW_DEBUG("load setting succ not true");
-    return __LINE__;
-  }
-}
-int SenceData::LoadPlanes (const string &file) {
-  ifstream ifs(file);
-  if (!ifs) {
-    cerr << "cannot open file:" << file << endl;
-    return __LINE__;
-  }
-  int plane_num;
-  ifs >> plane_num;
-  for (int i=0; i<plane_num; ++i) {
-    pPlane plane_ptr = pPlane(new Plane());
-    Vector3d &tmp_point = plane_ptr->GetPoint();
-    Vector3d &tmp_normal = plane_ptr->GetNormal();
-    ifs >> tmp_point[0] >> tmp_point[1] >> tmp_point[2];
-    ifs >> tmp_normal[0] >> tmp_normal[1] >> tmp_normal[2];
-    planes_.push_back(plane_ptr);
-  }
-  return 0;
+  assert(succ);
+  ZSW_DEBUG(!succ, "load setting error: succ not true");
+  return succ ? 0:__LINE__;
 }
 
 int SenceData::CalTetMeshGravity () {
@@ -135,7 +119,12 @@ int SenceData::CalTetMeshGravity () {
   assert_eq_eps(tet_mesh_gravity_(1,0), g_normal_[1], 1e-3);
   assert_eq_eps(tet_mesh_gravity_(2,0), g_normal_[2], 1e-3);
 
-  tet_mesh_gravity_= g_*M*tet_mesh_gravity_;
+  tet_mesh_gravity_= M*tet_mesh_gravity_;
 
   return 0;
+}
+
+std::ostream& COLIDE_RIGID::operator<<(std::ostream& os, Plane &plane) {
+  os << "[plane] point: " << plane.point_.transpose() << " normal:" << plane.normal_.transpose();
+   return os;
 }
