@@ -10,7 +10,6 @@
 using namespace COLIDE_RIGID;
 using namespace Eigen;
 
-
 void Plane::Collide (const UTILITY::VVec3d &nodes, const double kd, Eigen::VectorXd &u, Eigen::VectorXd &v) {
   for (int i=0; i<nodes.size(); ++i) {
     double depth = normal_.dot(point_ - nodes[i] - u.segment<3>(i*3));
@@ -28,16 +27,29 @@ void RigidBall::Collide (const UTILITY::VVec3d &nodes,  const double k, const Ei
   exit(__LINE__);
 }
 int RigidBall::ExportObj (const string &filename) const {
-    cout << __FILE__ << __LINE__ << endl;
-  exit(__LINE__);
+  if(obj_.write(filename)) { return 0; }
+  ZSW_INFO("Cannot export file:" << filename);
+  return __LINE__;
+}
 
+bool RigidBall::LoadObj (const string &filename) {
+  return obj_.load(filename);
 }
 void RigidBall::transform (const Vector3d &dis) {
-    cout << __FILE__ << __LINE__ << endl;
-  exit(__LINE__);
-
+  VectorXd &verts = obj_.getModifyVerts();
+  assert(verts.size()%3 == 0);
+  MatrixXd tmp_disp(3,verts.size()/3);
+  tmp_disp.row(0).setConstant(dis[0]);
+  tmp_disp.row(1).setConstant(dis[1]);
+  tmp_disp.row(2).setConstant(dis[2]);
+  tmp_disp.resize(verts.size(), 1);
+  assert_eq_eps(tmp_disp(0,0), dis[0], 1e-4);
+  assert_eq_eps(tmp_disp(1,0), dis[1], 1e-4);
+  assert_eq_eps(tmp_disp(2,0), dis[2], 1e-4);
+  ZSW_REDUNDANT(tmp_disp.transpose());
+  verts += tmp_disp;
 }
-Vector3d RigidBall::CalGravity (const double g) {
+Vector3d RigidBall::CalGravity (const Vector3d &g_normal) {
     cout << __FILE__ << __LINE__ << endl;
   exit(__LINE__);
 
@@ -98,6 +110,12 @@ int SenceData::LoadData (const char *ini_file) {
     }
   }
   // @TODO load rigid ball
+  {
+    string ball_file;
+    succ &= jsonf.readFilePath("ball_file", ball_file);
+    succ &= rigid_ball_.LoadObj(ball_file);
+    assert(succ);
+  }
   assert(succ);
   ZSW_DEBUG(!succ, "load setting error: succ not true");
   return succ ? 0:__LINE__;

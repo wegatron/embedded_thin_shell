@@ -27,13 +27,13 @@ namespace COLIDE_RIGID {
   public:
     void Collide (const UTILITY::VVec3d &nodes,  const double k, const Eigen::VectorXd &u, Eigen::VectorXd &extforce) const;
     int ExportObj (const string &filename) const;
+    bool LoadObj (const string &filename);
     void transform (const Vector3d &dis);
-    Vector3d CalGravity (const double g);
+    Vector3d CalGravity (const Vector3d &g_normal);
   private:
     double r_;
     double density_;
     Eigen::Vector3d center_;
-    Eigen::VectorXd u_;
     UTILITY::Objmesh obj_;
   };
   typedef boost::shared_ptr<RigidBall> pRigidBall;
