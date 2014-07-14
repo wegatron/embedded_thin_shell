@@ -10,9 +10,13 @@ namespace COLIDE_RIGID {
   public:
     void forward ();
     void SetExtForce (Eigen::Vector3d &extforce);
+    void SetTimeStep (double h) { h_=h; }
+    void SetQuality (double quality) { quality_=quality; }
+    const Eigen::Vector3d &getU () const { return u_; }
   private:
+    double h_; // time step
     double quality_;
-    Eigen::Vector3d u_;
+    Eigen::Vector3d u_; // displacement in single time step not accumlate
     Eigen::Vector3d v_;
     Eigen::Vector3d extforce_;
   };

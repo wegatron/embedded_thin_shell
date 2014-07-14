@@ -4,11 +4,11 @@ using namespace std;
 using namespace COLIDE_RIGID;
 
 void SinglePointSimulator::forward () {
-  cout << __FILE__ << __LINE__ << "TODO implement" << endl;
-  exit(__LINE__);
+  assert(quality_>1e-4);
+  v_ += h_*extforce_/quality_;
+  u_ = h_*v_;
 }
 
 void SinglePointSimulator::SetExtForce (Eigen::Vector3d &extforce) {
-  cout << __FILE__ << __LINE__ << "TODO implement" << endl;
-  exit(__LINE__);
+  extforce_ = extforce;
 }
