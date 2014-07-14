@@ -4,7 +4,7 @@
 #include <JsonFilePaser.h>
 #include <assertext.h>
 #include <MassMatrix.h>
-
+#include <BBox.h>
 #include "zsw_debug.h"
 
 using namespace COLIDE_RIGID;
@@ -32,10 +32,24 @@ int RigidBall::ExportObj (const string &filename) const {
   return __LINE__;
 }
 
-bool RigidBall::LoadObj (const string &filename) {
-  return obj_.load(filename);
+bool RigidBall::InitFromObj (const string &filename) {
+  bool succ = true;
+  succ &= obj_.load(filename);
+  CalSetCR();
+  return succ;
 }
-void RigidBall::transform (const Vector3d &dis) {
+
+void RigidBall::CalSetCR () {
+  UTILITY::BBox<double, Vector3d, VectorXd> bbox(obj_.getVerts());
+  center_ = bbox.getCenter();
+  Vector3d max_conner, min_conner;
+  bbox.getMaxConner(&max_conner[0]);
+  bbox.getMinConner(&min_conner[0]);
+  r_ = (center_ - obj_.getVerts().head(3)).norm();
+  ZSW_REDUNDANT("[ball] center:"<< center_.transpose() << "max_conner:" << max_conner.transpose() << "min_conner:"<< min_conner.transpose() << "r:" << r_);
+}
+
+void RigidBall::Transform (const Vector3d &dis) {
   VectorXd &verts = obj_.getModifyVerts();
   assert(verts.size()%3 == 0);
   MatrixXd tmp_disp(3,verts.size()/3);
@@ -50,9 +64,8 @@ void RigidBall::transform (const Vector3d &dis) {
   verts += tmp_disp;
 }
 Vector3d RigidBall::CalGravity (const Vector3d &g_normal) {
-    cout << __FILE__ << __LINE__ << endl;
+  cout << __FILE__ << __LINE__ << endl;
   exit(__LINE__);
-
 }
 
 int SenceData::InitDataFromFile (const char *ini_file) {
@@ -113,7 +126,7 @@ int SenceData::LoadData (const char *ini_file) {
   {
     string ball_file;
     succ &= jsonf.readFilePath("ball_file", ball_file);
-    succ &= rigid_ball_.LoadObj(ball_file);
+    succ &= rigid_ball_.InitFromObj(ball_file);
     assert(succ);
   }
   assert(succ);

@@ -6,12 +6,12 @@
 
 namespace UTILITY{
 
-  template<typename real,typename VECTOR3D>
+  template<typename real,typename VECTOR3D, typename VECTOR_TYPE=std::vector<real>>
   class BBox{
 
   public:
 	BBox (){ clear();}
-	BBox (const std::vector<real> &vertexs){
+	BBox (const VECTOR_TYPE &vertexs){
 	  clear();
 	  reset(vertexs);
 	}
@@ -24,7 +24,7 @@ namespace UTILITY{
 	  setVec3d(_rightUpFront,0,0,0);
 	  setVec3d(_center,0,0,0);
 	}
-	void reset(const std::vector<real> &vertexs){
+	void reset(const VECTOR_TYPE &vertexs){
 	  if(vertexs.size() > 0){
 		int vertexs_num = (int)vertexs.size()/3;
 		const real *p_vertexs = &vertexs[0];

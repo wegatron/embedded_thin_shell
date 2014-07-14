@@ -27,10 +27,11 @@ namespace COLIDE_RIGID {
   public:
     void Collide (const UTILITY::VVec3d &nodes,  const double k, const Eigen::VectorXd &u, Eigen::VectorXd &extforce) const;
     int ExportObj (const string &filename) const;
-    bool LoadObj (const string &filename);
-    void transform (const Vector3d &dis);
+    bool InitFromObj (const string &filename);
+    void Transform (const Vector3d &dis);
     Vector3d CalGravity (const Vector3d &g_normal);
   private:
+    void CalSetCR (); // caculate and set center and radius
     double r_;
     double density_;
     Eigen::Vector3d center_;
