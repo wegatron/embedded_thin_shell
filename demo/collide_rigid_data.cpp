@@ -22,12 +22,39 @@ void Plane::Collide (const UTILITY::VVec3d &nodes, const double kd, Eigen::Vecto
   }
 }
 
-void RigidBall::Collide (const UTILITY::VVec3d &nodes,  const double k, const Eigen::VectorXd &u, Eigen::VectorXd &extforce) const {
-  cout << __FILE__ << __LINE__ << endl;
-  exit(__LINE__);
+void Plane::Collide(const double kd, Vector3d &v, RigidBall &rigid_ball) {
+  double depth = normal_.dot(point_-(rigid_ball.GetCenter()-rigid_ball.GetR()*normal_));
+  if (depth >0) { // collision
+    Vector3d change_u = depth*normal_;
+    rigid_ball.Transform(change_u);
+
+    double change_v = (-kd-1)*normal_.dot(v);
+    assert(change_v > 0);
+    v += change_v*normal_;
+  }
 }
+
+void RigidBall::Collide (const UTILITY::VVec3d &nodes,  const double k, const Eigen::VectorXd &u, Eigen::VectorXd &extforce) const {
+  extforce.resize(nodes.size()*3);
+  extforce.setZero();
+  for (int i=0; i<nodes.size(); ++i) {
+    Vector3d normal = nodes[i] + u.segment<3>(i*3) - center_;
+    double diff = r_ - normal.norm();
+    if (diff > 0) { // collision
+      assert(normal.norm()>1e-2);
+      extforce.segment<3>(i*3) = k * diff/normal.norm() * normal;
+    }
+  }
+}
+
 int RigidBall::ExportObj (const string &filename) const {
   if(obj_.write(filename)) { return 0; }
+  ZSW_INFO("Cannot export file:" << filename);
+  return __LINE__;
+}
+
+int RigidBall::ExportVtk(const string &filename) const {
+  if(obj_.writeVTK(filename)) { return 0; }
   ZSW_INFO("Cannot export file:" << filename);
   return __LINE__;
 }
@@ -35,21 +62,24 @@ int RigidBall::ExportObj (const string &filename) const {
 bool RigidBall::InitFromObj (const string &filename) {
   bool succ = true;
   succ &= obj_.load(filename);
-  CalSetCR();
+  CalSetCRQ();
   return succ;
 }
 
-void RigidBall::CalSetCR () {
+void RigidBall::CalSetCRQ () {
   UTILITY::BBox<double, Vector3d, VectorXd> bbox(obj_.getVerts());
   center_ = bbox.getCenter();
   Vector3d max_conner, min_conner;
   bbox.getMaxConner(&max_conner[0]);
   bbox.getMinConner(&min_conner[0]);
   r_ = (center_ - obj_.getVerts().head(3)).norm();
-  ZSW_REDUNDANT("[ball] center:"<< center_.transpose() << "max_conner:" << max_conner.transpose() << "min_conner:"<< min_conner.transpose() << "r:" << r_);
+  assert(density_>1e-3);
+  quality_ = 4.0*3.14159265358979323846/3.0*density_*r_*r_*r_;
+  ZSW_REDUNDANT("[ball] center:"<< center_.transpose() << "max_conner:" << max_conner.transpose() << "min_conner:"<< min_conner.transpose() << "r:" << r_ << "quality:" << quality_);
 }
 
 void RigidBall::Transform (const Vector3d &dis) {
+  center_ += dis;
   VectorXd &verts = obj_.getModifyVerts();
   assert(verts.size()%3 == 0);
   MatrixXd tmp_disp(3,verts.size()/3);
@@ -60,12 +90,7 @@ void RigidBall::Transform (const Vector3d &dis) {
   assert_eq_eps(tmp_disp(0,0), dis[0], 1e-4);
   assert_eq_eps(tmp_disp(1,0), dis[1], 1e-4);
   assert_eq_eps(tmp_disp(2,0), dis[2], 1e-4);
-  ZSW_REDUNDANT(tmp_disp.transpose());
   verts += tmp_disp;
-}
-Vector3d RigidBall::CalGravity (const Vector3d &g_normal) {
-  cout << __FILE__ << __LINE__ << endl;
-  exit(__LINE__);
 }
 
 int SenceData::InitDataFromFile (const char *ini_file) {
@@ -96,7 +121,9 @@ int SenceData::LoadData (const char *ini_file) {
     succ &= jsonf.read("output_tet_prefix", out_tet_mesh_prefix_);
     succ &= jsonf.read("output_shell_prefix", out_shell_mesh_prefix_);
   }
-  succ &= jsonf.read("kd", kd_);
+  succ &= jsonf.read("soft_kd", soft_kd_);
+  succ &= jsonf.read("rigid_kd", rigid_kd_);
+  succ &= jsonf.read("stiff_k", stiff_k_);
   assert(succ);
 
   { // tet_mesh
@@ -122,8 +149,15 @@ int SenceData::LoadData (const char *ini_file) {
       planes_.push_back(plane_ptr);
     }
   }
-  // @TODO load rigid ball
+  // load rigid ball
   {
+    double ball_density;
+    succ &= jsonf.read("ball_density", ball_density);
+    vector<double> tmp_ball_v;
+    succ &= jsonf.read("ball_v", tmp_ball_v);
+    std::copy(tmp_ball_v.begin(), tmp_ball_v.end(), &ball_v_[0]);
+    rigid_ball_.SetDensity(ball_density);
+    assert(succ);
     string ball_file;
     succ &= jsonf.readFilePath("ball_file", ball_file);
     succ &= rigid_ball_.InitFromObj(ball_file);

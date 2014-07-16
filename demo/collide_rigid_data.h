@@ -11,9 +11,35 @@
 
 namespace COLIDE_RIGID {
 
+  class RigidBall {
+  public:
+    bool InitFromObj (const string &filename);
+
+    void Collide (const UTILITY::VVec3d &nodes,  const double k, const Eigen::VectorXd &u, Eigen::VectorXd &extforce) const;
+    void Transform (const Vector3d &dis);
+
+    double GetR () const { return r_; }
+    const Eigen::Vector3d &GetCenter () const { return center_; }
+    double GetQuality () const { return quality_; }
+    void SetDensity (const double density) { density_=density; }
+
+    int ExportObj (const string &filename) const;
+    int ExportVtk (const string &filename) const;
+  private:
+    void CalSetCRQ (); // caculate and set center and radius and quality
+    double r_;
+    double quality_;
+
+    double density_;
+    Eigen::Vector3d center_;
+    UTILITY::Objmesh obj_;
+  };
+  typedef boost::shared_ptr<RigidBall> pRigidBall;
+
   class Plane {
   public:
     void Collide (const UTILITY::VVec3d &nodes, const double kd, Eigen::VectorXd &u, Eigen::VectorXd &v);
+    void Collide (const double kd, Eigen::Vector3d &v, RigidBall &rigid_ball);
     friend ostream& operator<<(ostream&, Plane&);
     Eigen::Vector3d &GetPoint () { return point_; }
     Eigen::Vector3d &GetNormal () { return normal_; }
@@ -23,22 +49,6 @@ namespace COLIDE_RIGID {
   };
   typedef boost::shared_ptr<Plane> pPlane;
 
-  class RigidBall {
-  public:
-    void Collide (const UTILITY::VVec3d &nodes,  const double k, const Eigen::VectorXd &u, Eigen::VectorXd &extforce) const;
-    int ExportObj (const string &filename) const;
-    bool InitFromObj (const string &filename);
-    void Transform (const Vector3d &dis);
-    Vector3d CalGravity (const Vector3d &g_normal);
-  private:
-    void CalSetCR (); // caculate and set center and radius
-    double r_;
-    double density_;
-    Eigen::Vector3d center_;
-    UTILITY::Objmesh obj_;
-  };
-  typedef boost::shared_ptr<RigidBall> pRigidBall;
-
   class SenceData {
   public:
     int InitDataFromFile (const char *ini_file);
@@ -46,8 +56,9 @@ namespace COLIDE_RIGID {
     int steps_;
     int output_steps_;
     double time_step_;
-    double kd_; // kd for velocity
-    double k_; // stiffness k for collision force
+    double soft_kd_; // kd for soft
+    double rigid_kd_; // kd for rigid
+    double stiff_k_; // stiffness k for collision force
     Eigen::Vector3d g_normal_; // gravity normal
     string ini_file_; // init file path
     string out_ball_prefix_;
@@ -58,6 +69,7 @@ namespace COLIDE_RIGID {
     UTILITY::pTetMesh tet_mesh_;
 
     RigidBall rigid_ball_;
+    Eigen::Vector3d ball_v_;
     std::vector<pPlane> planes_;
   private:
     int LoadData (const char *ini_file);

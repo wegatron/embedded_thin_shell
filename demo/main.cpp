@@ -16,6 +16,11 @@ int InitSim(const SenceData &sdata, pSimulator sim, pSinglePointSimulator ssim, 
   sim->setVolMesh(sdata.tet_mesh_);
   sim->precompute();
   sim->setExtForce(sdata.tet_mesh_gravity_);
+
+  ssim->SetTimeStep(sdata.time_step_);
+  ssim->SetQuality(sdata.rigid_ball_.GetQuality());
+  ssim->CalSetGravity(sdata.g_normal_);
+  ssim->SetV(sdata.ball_v_);
   return 0;
 }
 
@@ -23,15 +28,15 @@ Vector3d JoinForce(const VectorXd &extforce)
 {
   assert(extforce.size()%3==0);
   Vector3d ret(0,0,0);
-  for(int i=0; extforce.size(); ++i) {
+  for(int i=0; i<extforce.size(); ++i) {
     ret[i%3] += extforce[i];
   }
   return ret;
 }
 
-string CalFileName(const string &prefix, int out_steps, int width) {
+string CalFileName(const string &prefix, const string &suffix, const int out_steps, const int width) {
   stringstream ss;
-  ss << prefix << setw(width) << setfill('0') << out_steps << ".obj";
+  ss << prefix << setw(width) << setfill('0') << out_steps << suffix;
   return ss.str();
 }
 
@@ -47,27 +52,29 @@ int Excute(const char *inifile) {
   InitSim(sdata, sim, ssim, shell_sim);
   vector<VectorXd> record_u;
   for (int i=0; i<sdata.steps_; ++i) {
-    //ssim->forward();
-    // sdata.rigid_ball_.transform(ssim->getU());
-    // // @TODO transform rigid ball according single point simulator
     sim->forward();
+    ssim->forward();
+    sdata.rigid_ball_.Transform(ssim->GetU());
+    // collide plane
     for (int j=0; j<sdata.planes_.size(); ++j) {
-      sdata.planes_[j]->Collide(sdata.tet_mesh_->nodes(), sdata.kd_, sim->getModifyFullDisp(), sim->getV());
+      sdata.planes_[j]->Collide(sdata.tet_mesh_->nodes(), sdata.soft_kd_, sim->getModifyFullDisp(), sim->getV());
+      sdata.planes_[j]->Collide(sdata.rigid_kd_, ssim->GetV(), sdata.rigid_ball_);
     }
-    // VectorXd extforce;
-    // sdata.rigid_ball_.Collide(sdata.tet_mesh_->nodes(), sdata.k_, sim->getFullDisp(), extforce);
-    // // solid simulator set extforce
-    // sim->setExtForce(extforce + sdata.tet_mesh_gravity_);
+    VectorXd extforce;
+    sdata.rigid_ball_.Collide(sdata.tet_mesh_->nodes(), sdata.stiff_k_, sim->getFullDisp(), extforce);
+    // solid simulator set extforce
+    sim->setExtForce(extforce + sdata.tet_mesh_gravity_);
     // signle point simulator set extforce
-    // Vector3d tmp_force = JoinForce(extforce)+sdata.rigid_ball_.CalGravity(sdata.g_);
-    // ssim->SetExtForce(tmp_force);
-
+    Vector3d join_force = JoinForce(extforce);
+    ssim->SetExtForce(-join_force);
     // shell_sim->forward(sim->getFullDisp());
+
     // output
     if (i%sdata.output_steps_ == 0) {
       cout << "[zsw_info]: step" << i << endl;
+
       static int out_steps = 0;
-      // sdata.rigid_ball_.ExportObj(CalFileName(sdata.out_ball_prefix_, out_steps, 4));
+      sdata.rigid_ball_.ExportVtk(CalFileName(sdata.out_ball_prefix_, ".vtk", out_steps, 4));
       // ExportObj(CalFileName(sdata.out_ball_prefix_, out_steps, 4), shell_sim->GetCell(), shell_sim->GetNodes(), shell_sim->GetNormal(), true);
       VectorXd u = sim->getFullDisp();
       record_u.push_back(u);
