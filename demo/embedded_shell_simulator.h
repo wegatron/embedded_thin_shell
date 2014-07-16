@@ -13,12 +13,11 @@
 namespace ZSW {
   typedef zjucad::matrix::matrix<size_t> matrixt;
   typedef zjucad::matrix::matrix<double> matrixd;
-  typedef boost::shared_ptr< hj::sparse::spm_csc<double> > pspmcsc;
   typedef boost::shared_ptr< deformer > pShellDeformer;
   class EmbeddedShellSimulator
   {
   public:
-    void Init (const UTILITY::pTetMesh &tet_mesh);
+    void Init (const UTILITY::pTetMesh &tet_mesh, const int subdivision_time);
     void forward (const VectorXd &tet_disp);
     matrixt &GetCell () { return shell_cell_; }
     matrixd &GetNodes () { return shell_nodes_; }
@@ -28,7 +27,8 @@ namespace ZSW {
     zjucad::matrix::matrix<size_t> shell_cell_;
     zjucad::matrix::matrix<double> shell_nodes_;
     zjucad::matrix::matrix<double> shell_normal_;
-    pspmcsc B_;
+    zjucad::matrix::matrix<double> B_;
+    zjucad::matrix::matrix<double> tet_nodes_;
   };
   typedef boost::shared_ptr<EmbeddedShellSimulator> pEmbeddedShellSimulator;
 
