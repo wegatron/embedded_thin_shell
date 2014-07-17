@@ -38,9 +38,8 @@ void EmbeddedShellSimulator::forward (const VectorXd &tet_disp) {
   shell_deformer_->deform(shell_nodes_, xq);
 }
 
-int ExportObj (const string filename, const matrixt &shell_cell, const matrixd &shell_nodes,
+int ZSW::ExportObj (const string filename, const matrixt &shell_cell, const matrixd &shell_nodes,
                const matrixd &shell_normal, const bool gen_normal) {
-
   VectorXd shell_nodes_e(shell_nodes.size(2)*3);
   VectorXd shell_normal_e(shell_nodes.size(2)*3);
   VectorXi shell_cell_e(shell_cell.size(2)*3);
@@ -53,7 +52,6 @@ int ExportObj (const string filename, const matrixt &shell_cell, const matrixd &
     shell_normal_e[i*3] = shell_normal(0,i);
     shell_normal_e[i*3+1] = shell_normal(1,i);
     shell_normal_e[i*3+2] = shell_normal(2,i);
-
   }
   for (int i=0; i<shell_cell.size(2); ++i) {
     shell_cell_e[i*3] = shell_cell(0,i);
@@ -63,4 +61,5 @@ int ExportObj (const string filename, const matrixt &shell_cell, const matrixd &
   UTILITY::Objmesh obj_mesh(shell_nodes_e, shell_cell_e);
   obj_mesh.setVertNormals(shell_normal_e);
   obj_mesh.write(filename);
+  return 0;
 }

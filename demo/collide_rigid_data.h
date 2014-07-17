@@ -55,6 +55,9 @@ namespace COLIDE_RIGID {
 
     int steps_;
     int output_steps_;
+
+    int subdivision_time_;
+
     double time_step_;
     double soft_kd_; // kd for soft
     double rigid_kd_; // kd for rigid

@@ -164,6 +164,9 @@ int SenceData::LoadData (const char *ini_file) {
     assert(succ);
   }
   assert(succ);
+
+  // shell
+  succ &= jsonf.read("subdivision_time", subdivision_time_);
   ZSW_DEBUG(!succ, "load setting error: succ not true");
   return succ ? 0:__LINE__;
 }
