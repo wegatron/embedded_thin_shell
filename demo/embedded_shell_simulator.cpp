@@ -34,6 +34,7 @@ void EmbeddedShellSimulator::forward (const VectorXd &tet_disp) {
   size_t col = tet_disp.size()/3;
   matrix<double> dx(3, col),
     xq(shell_nodes_.size(1), shell_nodes_.size(2));
+  std::copy(&tet_disp[0], &tet_disp[0]+tet_disp.size(), &dx(0,0));
   xq = (tet_nodes_ + dx) * B_;
   shell_deformer_->deform(shell_nodes_, xq);
 }

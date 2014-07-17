@@ -68,16 +68,16 @@ int Excute(const char *inifile) {
     // signle point simulator set extforce
     Vector3d join_force = JoinForce(extforce);
     ssim->SetExtForce(-join_force);
-    shell_sim->forward(sim->getFullDisp());
 
     // output
     if (i%sdata.output_steps_ == 0) {
       cout << "[zsw_info]: step" << i << endl;
+      VectorXd u = sim->getFullDisp();
+      shell_sim->forward(u);
 
       static int out_steps = 0;
       sdata.rigid_ball_.ExportVtk(CalFileName(sdata.out_ball_prefix_, ".vtk", out_steps, 4));
       ExportObj(CalFileName(sdata.out_shell_mesh_prefix_, ".obj", out_steps, 4), shell_sim->GetCell(), shell_sim->GetNodes(), shell_sim->GetNormal(), true);
-      VectorXd u = sim->getFullDisp();
       record_u.push_back(u);
       ++out_steps;
     }
