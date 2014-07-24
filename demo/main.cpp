@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <FullStVKSimulator.h>
+#include <Timer.h>
 #include "collide_rigid_data.h"
 #include "embedded_shell_simulator.h"
 #include "single_point_simulator.h"
@@ -21,7 +22,7 @@ int InitSim(const SenceData &sdata, pSimulator sim, pSinglePointSimulator ssim, 
   ssim->SetQuality(sdata.rigid_ball_.GetQuality());
   ssim->CalSetGravity(sdata.g_normal_);
   ssim->SetV(sdata.ball_v_);
-  shell_sim->Init(sdata.tet_mesh_, sdata.subdivision_time_);
+  // shell_sim->Init(sdata.tet_mesh_, sdata.subdivision_time_);
   return 0;
 }
 
@@ -52,8 +53,13 @@ int Excute(const char *inifile) {
 
   InitSim(sdata, sim, ssim, shell_sim);
   vector<VectorXd> record_u;
+  Timer timer2;
+  Timer timer;
+  timer.start();
   for (int i=0; i<sdata.steps_; ++i) {
+    // timer.start();
     sim->forward();
+    // timer.stop("solid sim time:");
     ssim->forward();
     sdata.rigid_ball_.Transform(ssim->GetU());
     // collide plane
@@ -71,22 +77,23 @@ int Excute(const char *inifile) {
 
     // output
     if (i%sdata.output_steps_ == 0) {
+      timer.stop("one frame time:");
       cout << "[zsw_info]: step" << i << endl;
       VectorXd u = sim->getFullDisp();
-      shell_sim->forward(u);
+      // shell_sim->forward(u);
 
       static int out_steps = 0;
       sdata.rigid_ball_.ExportVtk(CalFileName(sdata.out_ball_prefix_, ".vtk", out_steps, 4));
-      ExportObj(CalFileName(sdata.out_shell_mesh_prefix_, ".obj", out_steps, 4), shell_sim->GetCell(), shell_sim->GetNodes(), shell_sim->GetNormal(), true);
+      // ExportObj(CalFileName(sdata.out_shell_mesh_prefix_, ".obj", out_steps, 4), shell_sim->GetCell(), shell_sim->GetNodes(), shell_sim->GetNormal(), true);
       record_u.push_back(u);
       ++out_steps;
+      timer.start();
     }
   }
   { // save as vtk files.
     bool succ = sdata.tet_mesh_->writeVTK(sdata.out_tet_mesh_prefix_, record_u);
     assert(succ);
   }
-
 }
 
 int main(int argc, char *argv[])

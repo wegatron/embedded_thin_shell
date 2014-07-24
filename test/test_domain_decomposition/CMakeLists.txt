@@ -1,6 +1,7 @@
 
 
-file(GLOB cluster_source ${CMAKE_SOURCE_DIR}/src/shell_deformer/cluster.cpp)
+file(GLOB cluster_source ${CMAKE_SOURCE_DIR}/src/shell_deformer/cluster.cpp
+                         ${CMAKE_SOURCE_DIR}/src/shell_deformer/sparse_transition.cpp)
 file(GLOB parallize_source ${CMAKE_SOURCE_DIR}/src/parallize/*.cpp)
 
 add_executable(test_domain_decomposition main.cpp ${cluster_source} ${parallize_source})

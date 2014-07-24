@@ -48,19 +48,24 @@ int main()
 
     matrix<size_t> mesh;
     matrix<double> node;
+
     jtf::mesh::tet_mesh_read_from_zjumat(__POJ_BASE_PATH "dat/cylinder_16k/init.tet",
                                          &node, &mesh);
     std::ofstream os(__POJ_BASE_PATH "dat/cylinder_16k/init.vtk");
     node /= 2.0;
+    std::ofstream os("/home/chenjiong/usr/WorkSpace/embedded_shell/dat/cylinder_16k/init.vtk");
+
     tet2vtk(os, &node[0], node.size(2), &mesh[0], mesh.size(2));
     cout << "[INFO]DONE!\n";
     return 0;
 }
 #else
+
 int main(int argc, char *argv[])
 {
     //************load tet mesh and elastic parameter*************************************************
-    const string ini_file = __POJ_BASE_PATH "dat/new_cylinder/simu_full.ini";
+
+    const string ini_file = __POJ_BASE_PATH "dat/sofa/simu_full.ini";
     JsonFilePaser jsonf;
     bool succ = jsonf.open(ini_file);
     assert(succ);
@@ -101,13 +106,14 @@ int main(int argc, char *argv[])
     //************************************************************************************************
 
 
-    //*****************extract initial embed mesh and build B*****************************************
+    //*****************extract initial embed mesh and build interpolation matrix B*****************************************
         matrix<size_t> shell_cell;
         matrix<double> shell_nodes;
         matrix<double> shell_normal;
         gen_outside_shell(tet_cell, tet_nodes, shell_cell, shell_nodes, shell_normal, __SUBDIVISION_TIME, __EMBED_DEPTH);
         {
             std::ofstream os(__POJ_BASE_PATH "result/test_volume/tet_extract_init_embed.vtk");
+
             tri2vtk(os, &shell_nodes[0], shell_nodes.size(2), &shell_cell[0], shell_cell.size(2));
         }
         size_t row = tet_nodes.size(2);
@@ -123,8 +129,6 @@ int main(int argc, char *argv[])
 
         cout << "[INFO]shell face size : " << shell_cell.size(2) << endl;
         cout << "[INFO]shell nodes size : " << shell_nodes.size(2) << endl;
-
-
 
 
 
@@ -155,15 +159,15 @@ int main(int argc, char *argv[])
 //        simulator->setUc(uc);
 //    }         //for beam
 
-//    {
-//        vector<int> nodes{15,70,37,24,25,65,52,53,114,82,83,102,597,596,622
-//                         ,573,602,603,645,646,654,655,647};
-//        cout << "num of fixed nodes: " << nodes.size() << endl;
-//        simulator->setConNodes(nodes);
-//        VectorXd uc(nodes.size()*3);
-//        uc.setZero();
-//        simulator->setUc(uc);
-//    }        //for sofa
+    {
+        vector<int> nodes{15,70,37,24,25,65,52,53,114,82,83,102,597,596,622
+                         ,573,602,603,645,646,654,655,647};
+        cout << "num of fixed nodes: " << nodes.size() << endl;
+        simulator->setConNodes(nodes);
+        VectorXd uc(nodes.size()*3);
+        uc.setZero();
+        simulator->setUc(uc);
+    }        //for sofa
 
 //    {
 //        vector<int> nodes{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,
@@ -175,18 +179,18 @@ int main(int argc, char *argv[])
 //        simulator->setUc(uc);
 //    }        //for cylinder
 
-    {
-        vector<int> nodes;
-        for (int i = 0; i <= 20; ++i)
-            nodes.push_back(i);
-        for (int i = 42; i <= 65; ++i)
-            nodes.push_back(i);
-        cout << "num of fixed nodes: " << nodes.size() << endl;
-        simulator->setConNodes(nodes);
-        VectorXd uc(nodes.size()*3);
-        uc.setZero();
-        simulator->setUc(uc);
-    }       //for new cylinder
+//    {
+//        vector<int> nodes;
+//        for (int i = 0; i <= 20; ++i)
+//            nodes.push_back(i);
+//        for (int i = 42; i <= 65; ++i)
+//            nodes.push_back(i);
+//        cout << "num of fixed nodes: " << nodes.size() << endl;
+//        simulator->setConNodes(nodes);
+//        VectorXd uc(nodes.size()*3);
+//        uc.setZero();
+//        simulator->setUc(uc);
+//    }       //for new cylinder
 
 //    {
 //        vector<int> nodes;
@@ -208,7 +212,11 @@ int main(int argc, char *argv[])
     cluster_machine handle(shell_cell, shell_nodes, __CLUSTER_RADIUS);
     handle.partition(__REGION_COUNT);
 
+
+
+//    deformer shell_deformer(shell_cell, shell_nodes, shell_nodes, handle.regions_);
     deformer shell_deformer(shell_cell, shell_nodes, shell_nodes, handle.regions_);
+
 
     matrix<double> dx(tet_nodes.size(1), tet_nodes.size(2)),
                    q(tet_nodes.size(1), tet_nodes.size(2)),
@@ -221,28 +229,28 @@ int main(int argc, char *argv[])
 //        }  //force for new beam
 
         //single force on sofa
-//        const double force = -15000;
-//        const int nodeId0 = 474;
-//        const double f0[3] = {0, 0, force};
-//        simulator->setExtForceOfNode(nodeId0, f0);
-//        const int nodeId1 = 470;
-//        const double f1[3] = {0, 0, force};
-//        simulator->setExtForceOfNode(nodeId1, f1);
-//        const int nodeId2 = 465;
-//        const double f2[3] = {0, 0, force};
-//        simulator->setExtForceOfNode(nodeId2, f2);
-//        const int nodeId3 = 468;
-//        const double f3[3] = {0, 0, force};
-//        simulator->setExtForceOfNode(nodeId3, f3);
-//        const int nodeId4 = 473;
-//        const double f4[3] = {0, 0, force};
-//        simulator->setExtForceOfNode(nodeId4, f4);
-//        const int nodeId5 = 469;
-//        const double f5[3] = {0, 0, force};
-//        simulator->setExtForceOfNode(nodeId5, f5);
-//        const int nodeId6 = 472;
-//        const double f6[3] = {0, 0, force - 5000};
-//        simulator->setExtForceOfNode(nodeId6, f6);
+        const double force = -15000;
+        const int nodeId0 = 474;
+        const double f0[3] = {0, 0, force};
+        simulator->setExtForceOfNode(nodeId0, f0);
+        const int nodeId1 = 470;
+        const double f1[3] = {0, 0, force};
+        simulator->setExtForceOfNode(nodeId1, f1);
+        const int nodeId2 = 465;
+        const double f2[3] = {0, 0, force};
+        simulator->setExtForceOfNode(nodeId2, f2);
+        const int nodeId3 = 468;
+        const double f3[3] = {0, 0, force};
+        simulator->setExtForceOfNode(nodeId3, f3);
+        const int nodeId4 = 473;
+        const double f4[3] = {0, 0, force};
+        simulator->setExtForceOfNode(nodeId4, f4);
+        const int nodeId5 = 469;
+        const double f5[3] = {0, 0, force};
+        simulator->setExtForceOfNode(nodeId5, f5);
+        const int nodeId6 = 472;
+        const double f6[3] = {0, 0, force - 5000};
+        simulator->setExtForceOfNode(nodeId6, f6);
 
 
 //        //mutilple force on sofa
@@ -354,16 +362,16 @@ int main(int argc, char *argv[])
 
 
 //new cylinder push one face
-        for (int i = 66; i <= 89; ++i) {
-            const double f[3] = {0, 0, -5000};
-            simulator->setExtForceOfNode(i, f);
-        }
+//        for (int i = 66; i <= 89; ++i) {
+//            const double f[3] = {0, 0, -5000};
+//            simulator->setExtForceOfNode(i, f);
+//        }
 
-        //16k face cylinder push one face
-        for (int i = 140; i <= 215; ++i) {
-            const double f[3] = {0, 0, -1000};
-            simulator->setExtForceOfNode(i, f);
-        }
+//        //16k face cylinder push one face
+//        for (int i = 140; i <= 215; ++i) {
+//            const double f[3] = {0, 0, -1000};
+//            simulator->setExtForceOfNode(i, f);
+//        }
 
 
 //        const double force = 1500;
@@ -374,7 +382,7 @@ int main(int argc, char *argv[])
 
 
         VectorXd disp;
-        for (int i = 0; i < 120; ++i)
+        for (int i = 0; i < 50; ++i)
         {
             cout << "\n\nstep " << i << endl;
 
@@ -431,13 +439,15 @@ int main(int argc, char *argv[])
             {
                 //check the embedded mesh
                 char outfile[100];
-                sprintf(outfile, __POJ_BASE_PATH "dat/result/test_volume/after_deformation_%d.vtk", i);
+                sprintf(outfile, __POJ_BASE_PATH "result/test_volume/elastic_solid_%d.vtk", i);
                 std::ofstream os(outfile);
                 tet2vtk(os, &q[0], q.size(2), &tet_cell[0], tet_cell.size(2));
             }
             {   //check the embedded mesh
                 char outfile[100];
+
                 sprintf(outfile, __POJ_BASE_PATH "result/test_volume/emb_mesh_image_%d.vtk", i);
+
                 std::ofstream os(outfile);
                 tri2vtk(os, &xq[0], xq.size(2), &shell_cell[0], shell_cell.size(2));
             }
@@ -449,12 +459,12 @@ int main(int argc, char *argv[])
             }
 //            {
 //                char outfile[100];
-//                sprintf(outfile, "/home/wegatron/Desktop/beam_shell_mesh/shell_mesh_%d.obj", i);
+//                sprintf(outfile, "/home/chenjiong/Desktop/beam_shell_mesh/shell_mesh_%d.obj", i);
 //                jtf::mesh::save_obj(outfile, shell_cell, shell_nodes);
 //            }
 //            {
 //                char outfile[100];
-//                sprintf(outfile, "/home/wegatron/Desktop/beam_embedded_mesh/embd_mesh_%d.obj", i);
+//                sprintf(outfile, "/home/chenjiong/Desktop/beam_embedded_mesh/embd_mesh_%d.obj", i);
 //                jtf::mesh::save_obj(outfile, shell_cell, xq);
 //            }
 
@@ -463,6 +473,7 @@ int main(int argc, char *argv[])
             simulator->forward();
             cout << "elastic deformation : " << hrc.ms() - begin << endl;
             shell_deformer.deform(shell_nodes, xq);
+
         }
     }
 

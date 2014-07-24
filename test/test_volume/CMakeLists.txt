@@ -54,6 +54,7 @@ jtf-optimizer
 zjucad-optimizer
 zjucad-ptree
 shell
+blas
 /usr/lib/liblapack.so.3gf
 metis
 )

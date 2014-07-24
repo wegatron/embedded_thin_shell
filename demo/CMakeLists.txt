@@ -1,4 +1,8 @@
 #include_directories(/usr/local/include/utility)
+
+add_definitions(-DLOG_INFO)
+add_definitions(-DUSE_FUNC_TIMER)
+
 include_directories("../src")
 include_directories(
   ${PROJECT_SOURCE_DIR}/src/volume_simulator/solid_elastic

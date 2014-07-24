@@ -23,6 +23,8 @@ metis
   ${ARPACK_LIBRARIES}
   ${SUITESPARSE_LIBRARIES}
   ${SUPERLU2.0_LIBRARIES}
+blas
+lapack
 /usr/lib/libmpi.so.0
 )
 

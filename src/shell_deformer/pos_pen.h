@@ -1,10 +1,11 @@
-#ifndef CJ_POS_PENALTY_H_
-#define CJ_POS_PENALTY_H_
-
+#ifndef __CJ_POS_PENALTY_H__
+#define __CJ_POS_PENALTY_H__
 
 #include <hjlib/math_func/math_func.h>
 #include <zjucad/matrix/matrix.h>
 
+
+#include <hjlib/util/hrclock.h>
 
 typedef double FLT;
 typedef int32_t INT;
@@ -14,6 +15,16 @@ typedef hj::math_func::math_func_t<FLT, INT> func_t;
 using namespace std;
 using namespace zjucad::matrix;
 using namespace hj::math_func;
+
+
+typedef struct map_tuple{
+   size_t val_idx_;
+   size_t var_idx_;
+   double w_;
+   map_tuple() {}
+   map_tuple(const size_t val_idx, const size_t var_idx, const double w)
+       : val_idx_(val_idx), var_idx_(var_idx), w_(w) {}
+}map_tuple;
 
 
 //class position_difference : public func_t
@@ -86,20 +97,25 @@ using namespace hj::math_func;
 //};
 
 
+
 class position_difference : public func_t
 {
 public :
     position_difference(const zjucad::matrix::matrix<double>       &Bq,
                         const vector<vector<pair<size_t, double>>> &wgt_mat)
         : nodes_(Bq), wgt_mat_(wgt_mat) {
-        maps_.resize(3 * wgt_mat_.size());
-        size_t _c = maps_.size();
-        for (size_t i = 0; i < _c; ++i) {
-            size_t _idx = i / 3;
-            size_t _offset = i % 3;
-            for (size_t j = 0; j < wgt_mat_[_idx].size(); ++j)
-                maps_[i].push_back(make_pair(wgt_mat_[_idx][j].first * 3 + _offset, wgt_mat_[_idx][j].second));
+        for (size_t i = 0; i < wgt_mat_.size(); ++i) {
+            for (size_t j = 0; j < wgt_mat_[i].size(); ++j) {
+                for (size_t k = 0; k < 3; ++k) {
+                    size_t val_idx = i * 3 + k;
+                    size_t var_idx = wgt_mat_[i][j].first * 3 + k;
+                    double coeff = wgt_mat_[i][j].second;
+                    temp_maps_.push_back(map_tuple(val_idx, var_idx, coeff));
+                }
+            }
         }
+        maps_.resize(temp_maps_.size());
+        std::copy(temp_maps_.begin(), temp_maps_.end(), maps_.begin());
     }
 
     virtual size_t nx(void) const {
@@ -107,43 +123,36 @@ public :
     }
 
     virtual size_t nf(void) const {
-        return maps_.size();
+        return wgt_mat_.size() * 3;
     }
 
     virtual int eval(size_t k, const FLT *x, const coo2val_t<FLT, INT> &cv,
-                     hj::math_func::func_ctx *ctx = 0 ) const
+                     hj::math_func::func_ctx *ctx) const
     {
         if ( k == 0 ) {
 #pragma omp parallel for
             for (size_t i = 0; i < maps_.size(); ++i) {
-                INT c[] = {i};
-                for (size_t j = 0; j < maps_[i].size(); ++j) {
-                    cv[c] += (x[maps_[i][j].first] - nodes_[maps_[i][j].first]) *
-                            maps_[i][j].second;
-                }
+                INT c[] = {maps_[i].val_idx_};
+                cv[c] += ( x[maps_[i].var_idx_] - nodes_[maps_[i].var_idx_] ) * maps_[i].w_;
             }
         }
         if ( k == 1 ) {
 #pragma omp parallel for
             for (size_t i = 0; i < maps_.size(); ++i) {
-                for (size_t j = 0; j < maps_[i].size(); ++j) {
-                    INT c[] = {i, maps_[i][j].first};
-                    cv[c] += maps_[i][j].second;
-                }
+                INT c[] = {maps_[i].val_idx_, maps_[i].var_idx_};
+                cv[c] += maps_[i].w_;
             }
         }
         return 0;
     }
 
     virtual int patt(size_t k, coo_set<INT> &cs, const coo_l2g &l2g,
-                     hj::math_func::func_ctx *ctx = 0) const
+                     func_ctx *ctx) const
     {
         if ( k == 1 ) {
             for (size_t i = 0; i < maps_.size(); ++i) {
-                for (size_t j = 0; j < maps_[i].size(); ++j) {
-                    int32_t c[] = {i, maps_[i][j].first};
-                    l2g.add(cs, c);
-                }
+                INT c[] = {maps_[i].val_idx_, maps_[i].var_idx_};
+                l2g.add(cs, c);
             }
         }
         return 0;
@@ -158,17 +167,15 @@ public :
 
 public :
     matrix<double> nodes_;
-private :
+protected :
     const std::vector<std::vector<std::pair<size_t, double>>> &wgt_mat_;
-    vector<vector<pair<size_t, double>>> maps_;
-};
+    std::vector<map_tuple> temp_maps_;
+    matrix<map_tuple> maps_;
 
+};
 
 position_difference *build_pos_pen_diff(const zjucad::matrix::matrix<double>                       &Bq,
                                         const std::vector<std::vector<std::pair<size_t, double>>>  &clt_w);
-
-
-
 
 
 #endif

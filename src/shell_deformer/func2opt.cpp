@@ -26,7 +26,7 @@ size_t func2opt::dim(void) const
   return f_->nx();
 }
 
-int func2opt::val(const double *x, double &v)
+int func2opt::val(const double *x, double &v) const
 {
   f_->eval(0, x, coo2val(*cp_[0], &v));
 }

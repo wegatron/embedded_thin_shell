@@ -10,7 +10,7 @@ public:
   func2opt(const std::shared_ptr<const hj::math_func::math_func_t<double, int32_t> > &f);
 
   virtual size_t dim(void) const;
-  virtual int val(const double *x, double &v);
+  virtual int val(const double *x, double &v) const;
   virtual int gra(const double *x, double *g);
   virtual int hes(const double *x, size_t &nnz, size_t &format, double *h,
                   int32_t *ptr, int32_t *idx, double alpha = 1);

@@ -48,7 +48,9 @@ SET(UI_FORMS
 file(GLOB interpolate_source ${PROJECT_SOURCE_DIR}/src/interpolator/*.cpp)
 file(GLOB shell_deformer_source ${PROJECT_SOURCE_DIR}/src/shell_deformer/*.cpp
                                 ${CMAKE_SOURCE_DIR}/src/parallize/linear_solver.cpp
-                                ${CMAKE_SOURCE_DIR}/src/parallize/SQP.cpp)
+                                ${CMAKE_SOURCE_DIR}/src/parallize/SQP.cpp
+                                ${CMAKE_SOURCE_DIR}/src/parallize/shell_sqp.cpp)
+
 
 
 QT4_WRAP_CPP(UI_HEADERS_MOC ${UI_HEADERS})

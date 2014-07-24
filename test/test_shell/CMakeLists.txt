@@ -24,6 +24,7 @@ zjucad-ptree
   ${ARPACK_LIBRARIES}
   ${SUITESPARSE_LIBRARIES}
   ${SUPERLU2.0_LIBRARIES}
+blas
 shell
 lapack
 metis

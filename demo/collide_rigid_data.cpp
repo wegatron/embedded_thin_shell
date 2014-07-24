@@ -59,9 +59,11 @@ int RigidBall::ExportVtk(const string &filename) const {
   return __LINE__;
 }
 
-bool RigidBall::InitFromObj (const string &filename) {
+bool RigidBall::Init (const double density, const string &obj_file) {
   bool succ = true;
-  succ &= obj_.load(filename);
+  assert(density > 1e-2);
+  density_ = density;
+  succ &= obj_.load(obj_file);
   CalSetCRQ();
   return succ;
 }
@@ -111,10 +113,10 @@ int SenceData::LoadData (const char *ini_file) {
     succ &= jsonf.read("steps", steps_);
     succ &= jsonf.read("h", time_step_);
     vector<double> g_v;
-    succ &= jsonf.read("graverty", g_v);
+    succ &= jsonf.read("g_normal", g_v);
     assert(g_v.size()==3);
     std::copy(g_v.begin(), g_v.end(), &g_normal_[0]);
-    ZSW_INFO("gravity" << g_normal_.transpose());
+    ZSW_INFO("g_normal" << g_normal_.transpose());
     // output setting
     succ &= jsonf.read("output_steps", output_steps_);
     succ &= jsonf.read("output_ball_prefix", out_ball_prefix_);
@@ -156,11 +158,10 @@ int SenceData::LoadData (const char *ini_file) {
     vector<double> tmp_ball_v;
     succ &= jsonf.read("ball_v", tmp_ball_v);
     std::copy(tmp_ball_v.begin(), tmp_ball_v.end(), &ball_v_[0]);
-    rigid_ball_.SetDensity(ball_density);
     assert(succ);
     string ball_file;
     succ &= jsonf.readFilePath("ball_file", ball_file);
-    succ &= rigid_ball_.InitFromObj(ball_file);
+    succ &= rigid_ball_.Init(ball_density, ball_file);
     assert(succ);
   }
   assert(succ);

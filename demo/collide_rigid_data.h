@@ -13,7 +13,7 @@ namespace COLIDE_RIGID {
 
   class RigidBall {
   public:
-    bool InitFromObj (const string &filename);
+    bool Init (const double density, const string &filename);
 
     void Collide (const UTILITY::VVec3d &nodes,  const double k, const Eigen::VectorXd &u, Eigen::VectorXd &extforce) const;
     void Transform (const Vector3d &dis);
@@ -21,7 +21,6 @@ namespace COLIDE_RIGID {
     double GetR () const { return r_; }
     const Eigen::Vector3d &GetCenter () const { return center_; }
     double GetQuality () const { return quality_; }
-    void SetDensity (const double density) { density_=density; }
 
     int ExportObj (const string &filename) const;
     int ExportVtk (const string &filename) const;
@@ -56,7 +55,7 @@ namespace COLIDE_RIGID {
     int steps_;
     int output_steps_;
 
-    int subdivision_time_;
+    int subdivision_time_; // sub division time of the embedded shell mesh
 
     double time_step_;
     double soft_kd_; // kd for soft
@@ -68,11 +67,11 @@ namespace COLIDE_RIGID {
     string out_tet_mesh_prefix_;
     string out_shell_mesh_prefix_;
 
-    Eigen::MatrixXd tet_mesh_gravity_;
+    Eigen::MatrixXd tet_mesh_gravity_; // caculate by CalTetMeshGravity
     UTILITY::pTetMesh tet_mesh_;
 
     RigidBall rigid_ball_;
-    Eigen::Vector3d ball_v_;
+    Eigen::Vector3d ball_v_; // init ball velocity
     std::vector<pPlane> planes_;
   private:
     int LoadData (const char *ini_file);
