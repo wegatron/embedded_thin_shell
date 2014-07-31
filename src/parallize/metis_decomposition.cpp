@@ -6,9 +6,9 @@
 #include <memory>
 #include <metis.h>
 #include <set>
-#include "src/shell_deformer/cluster.h"
-#include "src/conf_para.h"
-#include "common/vtk.h"
+#include "../shell_deformer/cluster.h"
+#include "../conf_para.h"
+#include "../../common/vtk.h"
 
 using namespace zjucad::matrix;
 

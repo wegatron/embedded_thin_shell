@@ -1,0 +1,11 @@
+MY PROJECT -*- mode: org -*-
+
+#+AUTHOR: Shengwei ZHANG
+#+EMAIL: wegatron@gmail.com
+#+DATE: [2014-07-06 Sun]
+
+#+TITLE Report
+
+|           | implicit | semi-implicit |
+|-----------+----------+---------------|
+| time step |  0.004s  |  0.0001s      |

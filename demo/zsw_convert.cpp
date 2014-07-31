@@ -1,5 +1,9 @@
 #include "zsw_convert.h"
 
+#include <iostream>
+
+using namespace std;
+
 void ZSW::Convert (const UTILITY::VVec3d &vvec3d, zjucad::matrix::matrix<double> &zju_matrixd)
 {
   zju_matrixd.resize(3,vvec3d.size());
@@ -32,6 +36,12 @@ void ZSW::Convert (const zjucad::matrix::matrix<double> &zju_matrixd, UTILITY::V
   }
 }
 
+void ZSW::Convert (const zjucad::matrix::matrix<double> &zju_matrixd, std::vector<double> &vecd)
+{
+  vecd.resize(zju_matrixd.size(1)*zju_matrixd.size(2));
+  std::copy(zju_matrixd.begin(), zju_matrixd.end(), vecd.begin());
+}
+
 void ZSW::Convert (const zjucad::matrix::matrix<size_t> &zju_matrixi, UTILITY::VVec4i &vvec4i)
 {
   size_t col = zju_matrixi.size(2);
@@ -44,6 +54,11 @@ void ZSW::Convert (const zjucad::matrix::matrix<size_t> &zju_matrixi, UTILITY::V
   }
 }
 
+void ZSW::Convert (const zjucad::matrix::matrix<size_t> &zju_matrixi, std::vector<size_t> &veci)
+{
+  veci.resize(zju_matrixi.size(1)*zju_matrixi.size(2));
+  std::copy(zju_matrixi.begin(), zju_matrixi.end(), veci.begin());
+}
 
 // void ZSW::zsw_convert (const hj::sparse::spm_csc<double> &zjusp_m, zjucad::matrix::matrix<double> &zjudens_m)
 // {

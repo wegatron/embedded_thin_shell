@@ -12,8 +12,9 @@ jtf-optimizer
 jtf-mesh
 optimized
 zjucad-ptree
-#hj-util-static debug hj-util-staticd
+hj-util-static
 hj-function
 shell
+#/usr/lib/libcholmod.so
 gomp
 )

@@ -2,8 +2,8 @@
 
 #include <fstream>
 #include <jtflib/mesh/mesh.h>
-#include "src/shell_deformer/cluster.h"
-#include "common/vtk.h"
+#include "../shell_deformer/cluster.h"
+#include "../../common/vtk.h"
 
 
 using namespace std;

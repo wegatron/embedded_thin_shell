@@ -2,7 +2,9 @@ project(embedded_thin_shell)
 
 cmake_minimum_required(VERSION 2.8)
 
-set(CMAKE_VERBOSE_MAKEFILE on)
+#add_definitions(-DLOG_INFO)
+add_definitions(-DUSE_FUNC_TIMER)
+add_definitions(-DIMPLICIT_SOLID_SIMULATOR)
 
 if(WIN32)
 	include($ENV{HOME}/usr/share/cmake/Modules/win32_default.cmake)

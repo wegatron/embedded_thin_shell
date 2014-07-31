@@ -1,9 +1,13 @@
 #include <iomanip>
+
 #include <FullStVKSimulator.h>
 #include <Timer.h>
+
 #include "collide_rigid_data.h"
 #include "embedded_shell_simulator.h"
 #include "single_point_simulator.h"
+#include "zsw_convert.h"
+#include "vrml2_io.h"
 
 using namespace std;
 using namespace COLIDE_RIGID;
@@ -22,7 +26,7 @@ int InitSim(const SenceData &sdata, pSimulator sim, pSinglePointSimulator ssim, 
   ssim->SetQuality(sdata.rigid_ball_.GetQuality());
   ssim->CalSetGravity(sdata.g_normal_);
   ssim->SetV(sdata.ball_v_);
-  // shell_sim->Init(sdata.tet_mesh_, sdata.subdivision_time_);
+  shell_sim->Init(sdata.tet_mesh_, sdata.subdivision_time_);
   return 0;
 }
 
@@ -60,38 +64,43 @@ int Excute(const char *inifile) {
     // timer.start();
     sim->forward();
     // timer.stop("solid sim time:");
-    ssim->forward();
-    sdata.rigid_ball_.Transform(ssim->GetU());
+    // ssim->forward();
+    // sdata.rigid_ball_.Transform(ssim->GetU());
     // collide plane
     for (int j=0; j<sdata.planes_.size(); ++j) {
       sdata.planes_[j]->Collide(sdata.tet_mesh_->nodes(), sdata.soft_kd_, sim->getModifyFullDisp(), sim->getV());
       sdata.planes_[j]->Collide(sdata.rigid_kd_, ssim->GetV(), sdata.rigid_ball_);
     }
-    VectorXd extforce;
-    sdata.rigid_ball_.Collide(sdata.tet_mesh_->nodes(), sdata.stiff_k_, sim->getFullDisp(), extforce);
+    // VectorXd extforce;
+    // sdata.rigid_ball_.Collide(sdata.tet_mesh_->nodes(), sdata.stiff_k_, sim->getFullDisp(), extforce);
     // solid simulator set extforce
-    sim->setExtForce(extforce + sdata.tet_mesh_gravity_);
+    // sim->setExtForce(extforce + sdata.tet_mesh_gravity_);
     // signle point simulator set extforce
-    Vector3d join_force = JoinForce(extforce);
-    ssim->SetExtForce(-join_force);
+    // Vector3d join_force = JoinForce(extforce);
+    // ssim->SetExtForce(-join_force);
 
     // output
     if (i%sdata.output_steps_ == 0) {
       timer.stop("one frame time:");
       cout << "[zsw_info]: step" << i << endl;
       VectorXd u = sim->getFullDisp();
-      // shell_sim->forward(u);
+      shell_sim->forward(u);
 
       static int out_steps = 0;
-      sdata.rigid_ball_.ExportVtk(CalFileName(sdata.out_ball_prefix_, ".vtk", out_steps, 4));
-      // ExportObj(CalFileName(sdata.out_shell_mesh_prefix_, ".obj", out_steps, 4), shell_sim->GetCell(), shell_sim->GetNodes(), shell_sim->GetNormal(), true);
+      // sdata.rigid_ball_.ExportVtk(CalFileName(sdata.out_ball_prefix_, ".vtk", out_steps, 4));
+      ExportObj(CalFileName(sdata.out_shell_mesh_prefix_, ".obj", out_steps, 4), shell_sim->GetCell(), shell_sim->GetNodes(), shell_sim->GetNormal(), true);
+      vector<size_t> face_vec;
+      vector<double> point_vec;
+      ZSW::Convert(shell_sim->GetCell(), face_vec);
+      ZSW::Convert(shell_sim->GetNodes(), point_vec);
+      ExportVrml2(CalFileName(sdata.out_shell_mesh_prefix_, ".vrml", out_steps, 4),face_vec, point_vec);
       record_u.push_back(u);
       ++out_steps;
       timer.start();
     }
   }
   { // save as vtk files.
-    bool succ = sdata.tet_mesh_->writeVTK(sdata.out_tet_mesh_prefix_, record_u);
+    bool succ = sdata.tet_mesh_->writeVTK(sdata.out_tet_mesh_prefix_, record_u, false);
     assert(succ);
   }
 }

@@ -1,0 +1,8 @@
+MY PROJECT -*- mode: org -*-
+
+** First Demo Step
+*** command plugin helloWorld [2014/07/21]
+*** UI plugin get numbers or strings from UI [2014/07/22 - 2014/07/23]
+*** 提取maya场景中的一些数据，比如平面两个vector3d.  [2014/07/24-2014/07/26]
+*** 调用我们的程序接口（将从maya得到的输入传给我们的程序），模拟这个场景. check 跑出的结果(vtk序列是否正确). [2014/07/27]
+*** 最终我们的程序会得到obj序列，将其导入渲染.[2014/07/28-2014/07/29]

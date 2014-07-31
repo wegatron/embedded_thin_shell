@@ -19,8 +19,11 @@ namespace SIMULATOR{
   public:
 	FullStVKSimulator(){
 	  stvkModel = pFullStVKSimModel(new FullStVKSimModel());
+          #ifdef IMPLICIT_SOLID_SIMULATOR
+	  simulator = pLagImpFullSim(new LagImpFullSim(stvkModel));
+          #else
           simulator = pPenSemiImpFullSim (new PenSemiImpFullSim (stvkModel));
-	  /* simulator = pLagImpFullSim(new LagImpFullSim(stvkModel)); */
+          #endif
 	}
 	string name()const{
 	  return "full stvk";
@@ -99,8 +102,9 @@ namespace SIMULATOR{
 	
   private:
 	pFullStVKSimModel stvkModel;
+        pBaseFullSim simulator;
 	/* pLagImpFullSim simulator; */
-        pPenSemiImpFullSim simulator;
+        /* pPenSemiImpFullSim simulator; */
   };
   
   typedef boost::shared_ptr<FullStVKSimulator> pFullStVKSimulator;
