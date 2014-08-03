@@ -1,7 +1,8 @@
+#include "maya_op.h"
+
 #include <string> 
 #include <sys/types.h>
 #include <maya/MStatus.h>
-#include <maya/MPxCommand.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MArgList.h>
@@ -12,7 +13,6 @@
 #include <maya/MPointArray.h>
 #include <maya/MDagPath.h>
 #include <maya/MDagPathArray.h>
-#include <maya/MFnPlugin.h>
 #include <maya/MFnMesh.h>
 #include <maya/MFnSet.h>
 #include <maya/MItMeshPolygon.h>
@@ -32,38 +32,10 @@
 #include <maya/MAnimControl.h>
 #include <fstream>
 #include <iostream>
-#include <maya/MSimple.h>
-#include <assert.h>
-#include "refine_softbody.h"
+#include "convert.h"
+#include "vrml2_io.h"
 
 using namespace std;
-DeclareSimpleCommand( RefineSoftBody, "kongll", "2013.5");
-
-
-MStatus RefineSoftBody::doIt(const MArgList& args) {
-	MStatus status;
-	
-	MIntArray vertex_count;
-	MIntArray vertex_list;
-	MPointArray points;
-
-	MTime time;
-	MAnimControl animctrl;
-	double startframe= args.asDouble(0,&status);
-	double endframe=args.asDouble(1,&status);
-	double totaltime=endframe-startframe+1;
-	time = startframe;
-	for (size_t frame=0;frame<totaltime;frame++)
-	{
-		animctrl.setCurrentTime(time);
-		status = ExtractSelect(time, vertex_count, vertex_list, points);
-		char filename[256];
-		sprintf(filename,"C:\\Users\\Administrator\\Desktop\\plugin\\OBJ\\maya_export%03d.obj",frame);
-		status=ExportObj(filename,vertex_count,vertex_list,points);
-		time++;
-	}
-	return status;
-}
 
 MStatus ExtractSelect (const MTime &time, MIntArray &vertex_count, MIntArray &vertex_list, MPointArray &points)
 {
@@ -77,7 +49,7 @@ MStatus ExtractSelect (const MTime &time, MIntArray &vertex_count, MIntArray &ve
 		return MS::kFailure;
 	}
 	for ( ; !iter.isDone(); iter.next() )
-	{    
+	{
 		MDagPath objectPath;
 		status = iter.getDagPath( objectPath);
 		MItDag dagIterator( MItDag::kDepthFirst, MFn::kInvalid, &status);
@@ -112,10 +84,10 @@ MStatus ExtractSelect (const MTime &time, MIntArray &vertex_count, MIntArray &ve
 	}
 	return status;
 }
+
 MStatus ExportObj (const char *file_name, const MIntArray &vertex_count, const MIntArray &vertex_list, const MPointArray &points){
 	FILE* fp;
 	fp=fopen(file_name,"w");
-	assert(fp);
 	if (fp==NULL)
 	{
 		fclose(fp);
@@ -124,7 +96,7 @@ MStatus ExportObj (const char *file_name, const MIntArray &vertex_count, const M
 	}
 	for (size_t i=0;i<points.length();i++)
 	{
-		fprintf(fp,"v %f %f %f %f\n",points[i].x,points[i].y,points[i].z,points[i].w);					
+		fprintf(fp,"v %f %f %f %f\n",points[i].x,points[i].y,points[i].z,points[i].w);
 	}
 	size_t vcount =0;
 	for (size_t j=0;j<vertex_count.length();j++)
@@ -135,17 +107,50 @@ MStatus ExportObj (const char *file_name, const MIntArray &vertex_count, const M
 			fprintf(fp,"%d  ",vertex_list[vcount]+1);
 			vcount++;
 		}
-		fprintf(fp,"\n");		
+		fprintf(fp,"\n");
 	}
 	fclose(fp);
 	return MS::kSuccess;
 }
 
-//MStatus ImportObjs (const string prefix, const size_t count){
-//	MStatus status;
-//	return status;
-//}
-//MStatus Refine (const MIntArray &vertex_count, const MIntArray &vertex_list, const MPointArray &points, const string &prefix, const size_t count){
-//	MStatus status;
-//	return status;
-//}
+MStatus ImportVrml()
+{
+  MString createNode1("createNode transform -n AniMesh;");
+  createNode1+="createNode mesh -n AniMeshShape1 -p AniMesh;";
+  createNode1+="createNode AniMesh -n AniMeshNode1;";
+  createNode1+="connectAttr time1.outTime AniMeshNode1.time;";
+  createNode1+="connectAttr AniMeshNode1.outputMesh AniMeshShape1.inMesh;";
+  MGlobal::executeCommand(createNode1);
+  return MS::kSuccess;
+}
+
+MStatus ExportSelect2Vrml(const size_t start_frame, const size_t end_frame, const string &file_prefix){
+  MStatus status;
+  MIntArray vertex_count;
+  MIntArray vertex_list;
+  MPointArray points;
+
+  std::vector<size_t> faces_v;
+  std::vector<double> points_v;
+
+  MTime time;
+  MAnimControl animctrl;
+  size_t totaltime=end_frame-start_frame+1;
+  time = (double) start_frame;
+  for (size_t frame=0; frame<totaltime; frame++) {
+    animctrl.setCurrentTime(time);
+    status = ExtractSelect(time, vertex_count, vertex_list, points);
+    char filename[266];
+	char filename_type[256];
+	strncpy(filename_type, file_prefix.c_str(), 240);
+	strcat(filename_type, "%04d.vrml");
+    sprintf(filename, filename_type , frame);
+
+    faces_v.resize(vertex_list.length());
+    std::copy(&vertex_list[0], &vertex_list[0]+vertex_list.length(), &faces_v[0]);
+    MAYA_PLUGIN::Convert(points, points_v);
+    ExportVrml2(filename, faces_v, points_v);
+    time++;
+  }
+  return MS::kSuccess;
+}
