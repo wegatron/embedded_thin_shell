@@ -18,7 +18,7 @@ namespace SIMULATOR{
 	
   public:
 	FullStVKSimulator(){
-	  stvkModel = pFullStVKSimModel(new FullStVKSimModel());
+	  stvkModel = pFullStVKSimExtModel(new FullStVKSimExtModel());
           #ifdef IMPLICIT_SOLID_SIMULATOR
 	  simulator = pLagImpFullSim(new LagImpFullSim(stvkModel));
           #else
@@ -101,7 +101,7 @@ namespace SIMULATOR{
 	}
 	
   private:
-	pFullStVKSimModel stvkModel;
+	pFullStVKSimExtModel stvkModel;
         pBaseFullSim simulator;
 	/* pLagImpFullSim simulator; */
         /* pPenSemiImpFullSim simulator; */

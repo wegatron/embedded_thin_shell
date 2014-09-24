@@ -50,7 +50,7 @@ if(WIN32)
   set(SUPERLU2.0_LIBRARIES $ENV{HOME}/usr/lib/libsuperlu_4.3.a)
 # for arpack and arpack++
   set(ARPACK_LIBRARIES $ENV{HOME}/usr/lib/libarpack_Win64.a)
-  include_directories($ENV{HOME}/usr//include/arpack++)
+  include_directories($ENV{HOME}/usr/include/arpack++)
 # for eigen
   include_directories($ENV{HOME}/usr/include)
   include_directories($ENV{HOME}/usr/include/eigen3)
@@ -117,7 +117,6 @@ include_directories(${CMAKE_BINARY_DIR})
 set(CMAKE_CXX_FLAGS "-fopenmp -fpermissive -std=c++0x ${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(src)
-#add_subdirectory(test)
+add_subdirectory(test)
 add_subdirectory(common)
-
 add_subdirectory(demo)

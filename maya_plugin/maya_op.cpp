@@ -1,7 +1,16 @@
 #include "maya_op.h"
 
+#include <io.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <string> 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
 #include <sys/types.h>
+
 #include <maya/MStatus.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
@@ -30,8 +39,8 @@
 #include <maya/MIntArray.h>
 #include <maya/MIOStream.h>
 #include <maya/MAnimControl.h>
-#include <fstream>
-#include <iostream>
+
+
 #include "convert.h"
 #include "vrml2_io.h"
 
@@ -129,7 +138,6 @@ MStatus ExportSelect2Vrml(const size_t start_frame, const size_t end_frame, cons
   MIntArray vertex_count;
   MIntArray vertex_list;
   MPointArray points;
-
   std::vector<size_t> faces_v;
   std::vector<double> points_v;
 
@@ -137,20 +145,86 @@ MStatus ExportSelect2Vrml(const size_t start_frame, const size_t end_frame, cons
   MAnimControl animctrl;
   size_t totaltime=end_frame-start_frame+1;
   time = (double) start_frame;
-  for (size_t frame=0; frame<totaltime; frame++) {
+ 
+  for (size_t frame=start_frame; frame<=end_frame; frame++) {
     animctrl.setCurrentTime(time);
     status = ExtractSelect(time, vertex_count, vertex_list, points);
     char filename[266];
 	char filename_type[256];
 	strncpy(filename_type, file_prefix.c_str(), 240);
-	strcat(filename_type, "%04d.vrml");
+	strcat(filename_type, "%d.vrml");
     sprintf(filename, filename_type , frame);
-
     faces_v.resize(vertex_list.length());
     std::copy(&vertex_list[0], &vertex_list[0]+vertex_list.length(), &faces_v[0]);
     MAYA_PLUGIN::Convert(points, points_v);
     ExportVrml2(filename, faces_v, points_v);
     time++;
   }
+ 
   return MS::kSuccess;
 }
+
+struct ThreadData{
+  string cmd;
+  int res;
+};
+
+static DWORD WINAPI ExecCmd(LPVOID lpParam)
+{
+  ThreadData *data = (ThreadData *) lpParam;
+  data->res = system(data->cmd.c_str());
+  return 0;
+}
+
+HANDLE DoRefine(const string &strExpPerfix, const string &strImpPerfix, const int sub,
+                const int start, const int end, int &all_res) {
+  DWORD dwThreadId;
+  HANDLE hThread;
+  ThreadData data;
+
+  data.res = -1; // executing
+  std::stringstream ss;
+  ss << "refine_shell.exe " << strExpPerfix << "0.vrml " << strExpPerfix << " " << strImpPerfix << " "
+     << sub << " " << start << " " << end;
+  data.cmd = ss.str();
+
+  std::ofstream log("refine_cmd_log.txt", ofstream::out);
+  log << data.cmd << endl;
+  log.close();
+
+  for (int i=start; i<=end; ++i) {
+    std::stringstream ss;
+    ss << strExpPerfix << i << ".vrml";
+    remove(ss.str().c_str());
+
+    ss.str(""); ss.clear();
+    ss << strImpPerfix << i << ".vrml";
+    remove(ss.str().c_str());
+  }
+  hThread = CreateThread(NULL,
+                         0,
+                         ExecCmd,
+                         &data,
+                         0,
+                         &dwThreadId);
+  return hThread;
+}
+
+void LoadUpdate(const string &strImpPerfix, const int current_time, const int *res)
+{
+  while(*res <= 0){
+    std::stringstream ss;
+    ss << strImpPerfix << current_time << ".vrml";
+    if ( _access(ss.str().c_str(), 0) ) {
+      break;
+    }
+	if (*res >0) { // error occurs
+		return;
+	}
+  }
+
+  MAnimControl animctrl;
+  MTime time = (double) current_time;
+  animctrl.setCurrentTime(time);
+}
+

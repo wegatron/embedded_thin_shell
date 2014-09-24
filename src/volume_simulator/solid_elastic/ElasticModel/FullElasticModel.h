@@ -147,7 +147,77 @@ namespace SIMULATOR{
 	VectorXd x;
   };
   typedef boost::shared_ptr<FullStVKSimModel> pFullStVKSimModel;
-  
+
+    /**
+   * @class FullStVKSimExtModel data model for full stvk simulation.
+   * add collision ball energy
+   */
+  class FullStVKSimExtModel:public BaseFullModel{
+	
+  public:
+	FullStVKSimExtModel(){
+	  fullStvk = pElasticForceTetFullStVK (new ElasticForceTetFullStVK());
+	}
+	bool init(const std::string filename){return true;}
+	bool prepare(){
+	  
+	  if (tetMesh){
+		tetMesh->nodes(rest_x);
+		x = rest_x;
+		fullStvk->prepare();
+		return true;
+	  }
+	  return false;
+	}
+	bool evaluateF(const Eigen::VectorXd &u, Eigen::VectorXd &f){
+	  assert(fullStvk);
+	  assert_eq(u.size(),rest_x.size());
+	  x = rest_x + u;
+	  fullStvk->force(x,f);
+	  f = -f; /// @todo
+	  return true;
+	}
+	bool evaluateK(const Eigen::VectorXd &u, SparseMatrix<double> &K_full){
+	  assert(fullStvk);
+	  assert_eq(u.size(),rest_x.size());
+	  x = rest_x + u;
+	  K_full = fullStvk->K(x);
+	  K_full *= -1.0f;
+	  return true;
+	}
+	bool evaluateM(DiagonalMatrix<double,-1> &M_lumped){
+	  assert(tetMesh);
+	  mass.compute(M_lumped,*tetMesh);
+	  return true;
+	}
+	bool evaluateM(SparseMatrix<double> &M_full){
+	  assert(tetMesh);
+	  mass.compute(M_full,*tetMesh);
+	  return true;
+	}
+	int dimension()const{
+	  return rest_x.size();
+	}
+	const VectorXd &getRestShape()const{
+	  return rest_x;
+	}
+
+	void setTetMesh(pTetMesh_const tet){
+	  tetMesh = tet;
+	  fullStvk->setVolMesh(tetMesh);
+	}
+	pTetMesh_const getTetMesh()const{
+	  return tetMesh;
+	}
+
+  private:
+	pTetMesh_const tetMesh;
+	pElasticForceTetFullStVK fullStvk;
+	MassMatrix mass;
+	VectorXd rest_x;
+	VectorXd x;
+  };
+  typedef boost::shared_ptr<FullStVKSimExtModel> pFullStVKSimExtModel;
 }//end of namespace
 
 #endif /* _FULLELASTICMODEL_H_ */

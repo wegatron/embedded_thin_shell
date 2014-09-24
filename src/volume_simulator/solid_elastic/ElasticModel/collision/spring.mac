@@ -1,0 +1,28 @@
+load(vect)$
+load(eigen)$
+load(hj_fortran2)$
+
+norm(v) := sqrt(v . v)$
+
+optimprefix : tt$
+
+f : openw("spring.f90")$
+
+block(
+  [x, center, r],
+  x : genmatrix(x, 3, 1),
+  center : genmatrix(center, 3, 1),
+  r : genmatrix(r, 1, 1),
+
+  spring_energy(x, center, r) := 
+  block(
+    [d],
+    d : x - center,
+    ( r - matrix([norm(d)]) )^2
+  ),
+   
+  with_stdout(f, val_jac_hes_to_f90(spring_energy, [x, center, r])),
+  return()
+)$
+
+close(f)$

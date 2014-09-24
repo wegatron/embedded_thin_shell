@@ -7,8 +7,16 @@
 
 #include "maya_plug_setting.h"
 #include "vrml2_io.h"
-
+#include <iostream>
+#include <fstream>
 using namespace std;
+
+static string import_prefix;
+
+void setImportPrefix(const string &prefix)
+{
+	import_prefix = prefix;
+}
 
 MStatus returnStatus;
 
@@ -65,9 +73,20 @@ MObject AniMesh::readFrame(const MTime& time,MObject& outData,MStatus& stat)
 	vector<size_t> face_v;
 	vector<double> points_v;
 	char cfilename[256];
-	sprintf(cfilename, IMPORT_PREFIX "%04d.vrml",frame);
+	sprintf(cfilename, "%s%d.vrml",import_prefix.c_str(),frame);
+	//sprintf(cfilename, "%s%d.vrml",import_prefix.c_str(),0);
 	string filename = string(cfilename);
-	ImportVrml2 (filename, face_v, points_v);
+	fstream fp;
+	fp.open(filename,ios::in);
+	if (fp)
+	{
+		ImportVrml2 (filename, face_v, points_v);
+	}else{
+		sprintf(cfilename, "%s%d.vrml",import_prefix.c_str(),0);
+		string filename = string(cfilename); 
+		ImportVrml2(filename,face_v,points_v);
+	}
+	
 	size_t numVertices = points_v.size()/3;
 	size_t numFaces = face_v.size()/3;
 	for(vector<double>::const_iterator it = points_v.begin();it != points_v.end();it+=3) {

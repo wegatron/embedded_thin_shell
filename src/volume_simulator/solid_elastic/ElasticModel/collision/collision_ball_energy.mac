@@ -1,0 +1,21 @@
+load(vect)$
+load(eigen)$
+
+load(hj_fortran2)$
+
+norm(v) := sqrt(v.v)$
+
+optimprefix : tt$
+
+f : openw("collision_ball_energy.f90")$
+
+block([v, c, r],
+  v : genmatrix(v, 3, 1),
+  c : genmatrix(c, 3, 1),
+  r : genmatrix(r, 1, 1),
+  collision_ball_energy(v, c, r) := (norm(v-c) - r)^2,
+  with_stdout(f, val_jac_hes_to_f90(collision_ball_energy, [v, c, r])),
+  return()
+)$
+
+close(f)$

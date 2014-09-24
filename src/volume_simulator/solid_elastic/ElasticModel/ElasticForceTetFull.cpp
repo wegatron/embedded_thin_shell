@@ -50,7 +50,7 @@ void ElasticForceTetFull::Kdx(const VectorXd&dx,const VectorXd&X,VectorXd&out){
 
 	const Vector4i &e=_vol_mesh->tets()[i];
 	const mat3x4 &dfdX = _tet_kdx[i];
-		
+
 	out.block<3,1>(e[0]*3,0)+=dfdX.col(0);
 	out.block<3,1>(e[1]*3,0)+=dfdX.col(1);
 	out.block<3,1>(e[2]*3,0)+=dfdX.col(2);

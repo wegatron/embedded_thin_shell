@@ -19,3 +19,5 @@ ADD_LIBRARY(${LIBRARY_NAME}
   ${solid_math_src}
   ${solid_common_src}
   )
+
+add_subdirectory(ElasticModel/collision)

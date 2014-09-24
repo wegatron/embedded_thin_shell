@@ -21,6 +21,12 @@ MStatus ExportObj (const char *file_name, const MIntArray &vertex_count, const M
 
 MStatus ImportVrml();
 
-MStatus ExportSelect2Vrml(const size_t start_frame, const size_t end_frame, const std::string &file_prefix=EXPORT_PREFIX);
+MStatus ExportSelect2Vrml(const size_t start_frame, const size_t end_frame, const std::string &file_prefix);
+
+// do remove the old files and refine in new thread windows version
+HANDLE DoRefine(const std::string &strExpPerfix, const std::string &strImpPerfix, const int sub, const int start, const int end, int &all_res);
+
+// check the file of current_time is exist, and set the current time to show the result
+void LoadUpdate(const std::string &strImpPerfix, const int current_time, const int *res);
 
 #endif /* REFINE_SOFTBODY_H */
