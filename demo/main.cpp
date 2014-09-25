@@ -9,6 +9,8 @@
 #include "zsw_convert.h"
 #include "vrml2_io.h"
 
+#include "CollisionForceTetFull.h"
+
 using namespace std;
 using namespace COLIDE_RIGID;
 using namespace ZSW;
@@ -54,7 +56,7 @@ int Excute(const char *inifile) {
   SenceData sdata;
   int ret = sdata.InitDataFromFile(inifile);
   if (ret!=0) { return __LINE__; }
-  pSimulator sim = pSimulator(new FullStVKSimulator()); // @todo change using FullStVKSimModelExt
+  pFullStVKSimulator sim = pFullStVKSimulator(new FullStVKSimulator()); // @todo change using FullStVKSimModelExt
 
   // pFullStVKSimModelExt def_model = pFullStVKSimModelExt(new FullStVKSimModelExt());
   // pSimulator sim = pSimulator(new FullStVSimulator(def_model));
@@ -69,17 +71,29 @@ int Excute(const char *inifile) {
   timer.start();
   int out_steps = 0;
 
+  pCollisionBallForceTetFull collision_energy
+    = pCollisionBallForceTetFull(new CollisionBallForceTetFull(200000));
+  sim->setCollisionEnergy(collision_energy);
+
   Eigen::Vector3d c_center = sdata.rigid_ball_.GetCenter();
   const double r = sdata.rigid_ball_.GetR();
+
+  // sdata.rigid_ball_.Transform(Eigen::Vector3d(0,0, -1));
+  // c_center += Eigen::Vector3d(0,0,-1);
+
+  collision_energy->setBallCenter(c_center);
+  collision_energy->setR(r);
+
   // @todo add collision energy to sim.
   for (int i=0; i<sdata.steps_; ++i) {
     // timer.start();
     sim->forward();
     // timer.stop("solid sim time:");
-    if(out_steps < 60) {
+    if(out_steps < 70) {
       ssim->forward();
       sdata.rigid_ball_.Transform(ssim->GetU());
       c_center += ssim->GetU();
+      collision_energy->setBallCenter(c_center);
     }
 
     // collide plane

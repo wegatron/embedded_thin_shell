@@ -1,6 +1,7 @@
 #ifndef _COLLISIONFORCETETFULL_H_
 #define _COLLISIONFORCETETFULL_H_
 
+#include <boost/shared_ptr.hpp>
 #include <eigen3/Eigen/Sparse>
 
 namespace UTILITY{
@@ -17,6 +18,7 @@ namespace UTILITY{
     virtual const Eigen::SparseMatrix<double> &K(const Eigen::VectorXd &X)=0;
     virtual void judge(const Eigen::VectorXd &X, Eigen::VectorXd &vertex_weight) const =0;
   };
+  typedef boost::shared_ptr<CollisionForceTetFull> pCollisionForceTetFull;
 
   class CollisionBallForceTetFull : public CollisionForceTetFull {
   public:
@@ -41,6 +43,7 @@ namespace UTILITY{
     double _k;
     Eigen::SparseMatrix<double> _K;
   };
+  typedef boost::shared_ptr<CollisionBallForceTetFull> pCollisionBallForceTetFull;
 }
 
 #endif

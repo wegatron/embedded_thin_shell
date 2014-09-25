@@ -6,6 +6,9 @@
 #include <FullSimulator.h>
 
 #include <FullElasticModel.h>
+
+#include "ElasticModel/CollisionForceTetFull.h"
+
 using namespace UTILITY;
 
 namespace SIMULATOR{
@@ -78,6 +81,11 @@ namespace SIMULATOR{
 	  return simulator->forward();
 	}
 
+        void setCollisionEnergy(pCollisionForceTetFull collide_energy) {
+          _collide_energy = collide_energy;
+          stvkModel->setColideEnergy(_collide_energy);
+        }
+
 	const VectorXd &getFullDisp()const{
 	  return simulator->getU();
 	}
@@ -102,6 +110,7 @@ namespace SIMULATOR{
 	
   private:
 	pFullStVKSimExtModel stvkModel;
+        pCollisionForceTetFull _collide_energy;
         pBaseFullSim simulator;
 	/* pLagImpFullSim simulator; */
         /* pPenSemiImpFullSim simulator; */

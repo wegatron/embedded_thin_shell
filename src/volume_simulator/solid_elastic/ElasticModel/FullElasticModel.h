@@ -9,6 +9,9 @@
 #include <ElasticForceTetFullStVK.h>
 #include <TetMesh.h>
 #include <MassMatrix.h>
+
+#include "ElasticModel/CollisionForceTetFull.h"
+
 using namespace std;
 using namespace Eigen;
 using namespace UTILITY;
@@ -133,10 +136,7 @@ namespace SIMULATOR{
 	  tetMesh = tet;
 	  fullStvk->setVolMesh(tetMesh);
 	}
-	pTetMesh_const getTetMesh()const{
-	  return tetMesh;
-	}
-
+        
   protected:
 	
   private:
@@ -160,7 +160,7 @@ namespace SIMULATOR{
 	}
 	bool init(const std::string filename){return true;}
 	bool prepare(){
-	  
+
 	  if (tetMesh){
 		tetMesh->nodes(rest_x);
 		x = rest_x;
@@ -175,6 +175,11 @@ namespace SIMULATOR{
 	  x = rest_x + u;
 	  fullStvk->force(x,f);
 	  f = -f; /// @todo
+          if(_collide_energy != NULL) {
+            Eigen::VectorXd cf;
+            _collide_energy->force(x, cf);
+            f += cf;
+          }
 	  return true;
 	}
 	bool evaluateK(const Eigen::VectorXd &u, SparseMatrix<double> &K_full){
@@ -183,6 +188,9 @@ namespace SIMULATOR{
 	  x = rest_x + u;
 	  K_full = fullStvk->K(x);
 	  K_full *= -1.0f;
+          if(_collide_energy != NULL) {
+            K_full += _collide_energy->K(x);
+          }
 	  return true;
 	}
 	bool evaluateM(DiagonalMatrix<double,-1> &M_lumped){
@@ -206,13 +214,16 @@ namespace SIMULATOR{
 	  tetMesh = tet;
 	  fullStvk->setVolMesh(tetMesh);
 	}
+        void setColideEnergy(pCollisionForceTetFull collide_energy) {
+          _collide_energy = collide_energy;
+        }
 	pTetMesh_const getTetMesh()const{
 	  return tetMesh;
 	}
-
   private:
 	pTetMesh_const tetMesh;
 	pElasticForceTetFullStVK fullStvk;
+        pCollisionForceTetFull _collide_energy;
 	MassMatrix mass;
 	VectorXd rest_x;
 	VectorXd x;

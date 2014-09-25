@@ -15,6 +15,7 @@ add_executable(collision_demo  ${parallize_source} ${demo_source})
 target_link_libraries(collision_demo
   interpolator
   solid_elastic
+  collision_energy
 jtf-mesh
 zjucad-tri_sub
 hj_ANN_c
